@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200..900&family=Hanken+Grotesk:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
 
-/* Root Variables for Fonts, Colors, and Layout */
 :root {
-    --header-font: 'Crimson Pro', serif;
-    --body-font: 'Hanken Grotesk', sans-serif;
+    --header-font: 'Inter', sans-serif; /* Updated to Inter */
+    --body-font: 'Inter', sans-serif;  /* Updated to Inter */
     --bg-color: #f9f9f9;
     --text-color-dark: #1a1a1a;
     --text-color-light: #707070;
@@ -12,14 +11,12 @@
     --link-color: #007acc;
 }
 
-/* Reset Margin and Padding */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Base Typography */
 body {
     font-family: var(--body-font);
     background-color: var(--bg-color);
@@ -28,7 +25,6 @@ body {
     padding: 0;
 }
 
-/* Header and Navigation */
 nav {
     display: flex;
     justify-content: center;
@@ -54,7 +50,6 @@ nav ul li a:hover {
     color: var(--accent-color);
 }
 
-/* Hero Section */
 header {
     text-align: center;
     padding: 120px 0;
@@ -78,7 +73,6 @@ header p {
     line-height: 1.7;
 }
 
-/* Section Styling */
 section {
     padding: 4em 2em;
     max-width: 1100px;
@@ -98,7 +92,6 @@ p {
     color: var(--text-color-light);
 }
 
-/* Grid for Projects */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -131,7 +124,6 @@ p {
     margin-bottom: 1.2em;
 }
 
-/* Buttons */
 .btn {
     padding: 10px 15px;
     background-color: var(--accent-color);
@@ -146,7 +138,6 @@ p {
     background-color: #005f99;
 }
 
-/* Footer Styling */
 footer {
     text-align: center;
     padding: 2em 0;
@@ -160,7 +151,6 @@ footer p {
     font-size: 1em;
 }
 
-/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
     nav ul {
         flex-direction: column;
@@ -170,11 +160,6 @@ footer p {
     header h1 {
         font-size: 3em;
     }
-
-    .grid {
-        grid-template-columns: 1fr;
-    }
-}
 
     .grid {
         grid-template-columns: 1fr;
