@@ -23,6 +23,7 @@ body {
     background-color: var(--bg-color);
     color: var(--text-dark);
     line-height: 1.8;
+    padding: 0 20px;
 }
 
 /* Navigation */
@@ -84,9 +85,88 @@ header p {
     line-height: 1.7;
 }
 
+/* Projects Section */
+#projects {
+    padding: 80px 20px;
+    max-width: 1000px; /* Increase max-width for better alignment */
+    margin: 0 auto;
+    text-align: center;
+}
+
+#projects h2 {
+    font-size: 2.5em;
+    margin-bottom: 1.5em;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Grid for Projects */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px;
+    justify-items: center;
+}
+
+/* Project Card */
+.project-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 300px; /* Max width for project cards */
+    text-align: left;
+}
+
+.project-card h3 {
+    font-size: 1.6em;
+    margin-bottom: 0.5em;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.project-card p {
+    font-size: 1.1em;
+    color: var(--text-light);
+    margin-bottom: 1.2em;
+    line-height: 1.5;
+}
+
+/* Button Styling */
+.project-card a.btn {
+    padding: 10px 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 5px;
+    font-size: 1.1em;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Shadow on hover */
+}
+
+.project-card a.btn:hover {
+    background-color: #005582; /* Darker button on hover */
+}
+
 /* Footer */
 footer {
     text-align: center;
     padding: 2em 0;
     color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
