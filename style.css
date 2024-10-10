@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
 
+/* Root Variables */
 :root {
     --header-font: 'Inter', sans-serif;
     --body-font: 'Inter', sans-serif;
@@ -7,14 +8,17 @@
     --text-dark: #000000;
     --text-light: #555555;
     --accent-color: #007acc;
+    --border-color: #dcdcdc;
 }
 
+/* Reset Margin and Padding */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Body Styling */
 body {
     font-family: var(--body-font);
     background-color: var(--bg-color);
@@ -23,16 +27,13 @@ body {
     padding: 0;
 }
 
+/* Navigation */
 nav {
     display: flex;
     justify-content: center;
     padding: 1.5em;
     background-color: var(--bg-color);
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 10;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
 }
 
 nav ul {
@@ -52,38 +53,67 @@ nav ul li a:hover {
     color: var(--accent-color);
 }
 
-header {
-    text-align: center;
-    padding-top: 120px; 
-    padding-bottom: 50px;
-}
-
-header h1 {
-    font-family: var(--header-font);
-    font-size: 2.8em; /* Smaller font for name */
-    font-weight: 600;
-    margin-bottom: 0.3em;
-}
-
-header p {
-    font-family: var(--body-font);
-    font-size: 1.2em;
-    color: var(--text-light);
-}
-
-#about {
-    max-width: 800px;
+/* Projects Section */
+#projects {
+    padding: 80px 20px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 40px 20px;
-    text-align: center; 
+    text-align: center;
 }
 
-#about p {
-    font-size: 1.2em;
+#projects h2 {
+    font-size: 2.5em;
+    margin-bottom: 1.5em;
+    font-family: var(--header-font);
+}
+
+/* Grid for Projects */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.project-card {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.project-card h3 {
+    font-size: 1.5em;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.project-card p {
+    font-size: 1.1em;
     color: var(--text-light);
-    line-height: 1.7;
+    margin-bottom: 1.2em;
 }
 
+.project-card a.btn {
+    padding: 10px 15px;
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer Styling */
 footer {
     text-align: center;
     padding: 2em 0;
@@ -91,12 +121,18 @@ footer {
     color: var(--text-light);
 }
 
+/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 1em;
+    }
+
     header h1 {
         font-size: 2.2em;
     }
 
-    #about p {
-        font-size: 1.1em;
+    .grid {
+        grid-template-columns: 1fr;
     }
 }
