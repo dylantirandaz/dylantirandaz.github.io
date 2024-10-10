@@ -4,11 +4,10 @@
 :root {
     --header-font: 'Inter', sans-serif;
     --body-font: 'Inter', sans-serif;
-    --bg-color: #ffffff;
-    --text-dark: #000000;
-    --text-light: #555555;
+    --bg-color: #f9f9f9;
+    --text-dark: #1a1a1a;
+    --text-light: #707070;
     --accent-color: #007acc;
-    --border-color: #dcdcdc;
 }
 
 /* Reset Margin and Padding */
@@ -23,22 +22,23 @@ body {
     font-family: var(--body-font);
     background-color: var(--bg-color);
     color: var(--text-dark);
-    line-height: 1.8;
+    line-height: 1.7;
+    padding: 0 20px;
 }
 
-/* Navigation */
+/* Minimal Navigation */
 nav {
     display: flex;
     justify-content: center;
     padding: 1.5em;
     background-color: var(--bg-color);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #e0e0e0;
 }
 
 nav ul {
     list-style: none;
     display: flex;
-    gap: 1.5em;
+    gap: 2em;
 }
 
 nav ul li a {
@@ -49,13 +49,13 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    color: var(--accent-color);
+    color: var(--text-dark);
 }
 
 /* Projects Section */
 #projects {
-    padding: 80px 20px;
-    max-width: 1100px;
+    padding-top: 80px;
+    max-width: 900px;
     margin: 0 auto;
     text-align: center;
 }
@@ -63,60 +63,61 @@ nav ul li a:hover {
 #projects h2 {
     font-size: 2.5em;
     margin-bottom: 1.5em;
-    font-family: var(--header-font);
+    color: var(--text-dark);
 }
 
 /* Grid for Projects */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
+    grid-template-columns: 1fr;
+    gap: 40px;
 }
 
+/* Project Card */
 .project-card {
     background-color: white;
     padding: 20px;
-    border: 1px solid var(--border-color);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 .project-card h3 {
-    font-size: 1.5em;
+    font-size: 1.8em;
+    margin-bottom: 0.5em;
     color: var(--text-dark);
-    margin-bottom: 10px;
 }
 
 .project-card p {
     font-size: 1.1em;
     color: var(--text-light);
-    margin-bottom: 1.2em;
+    margin-bottom: 1em;
 }
 
 .project-card a.btn {
-    padding: 10px 15px;
+    padding: 10px 20px;
     background-color: var(--accent-color);
     color: white;
     border-radius: 5px;
-    text-decoration: none;
-    text-align: center;
     font-size: 1.1em;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
 }
 
 .project-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer Styling */
+.project-card a.btn:hover {
+    background-color: #005f99;
+}
+
+/* Minimal Footer */
 footer {
     text-align: center;
     padding: 2em 0;
-    background-color: var(--bg-color);
     color: var(--text-light);
 }
 
@@ -125,10 +126,6 @@ footer {
     nav ul {
         flex-direction: column;
         gap: 1em;
-    }
-
-    header h1 {
-        font-size: 2.2em;
     }
 
     .grid {
