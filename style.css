@@ -51,29 +51,6 @@ nav ul li a:hover {
     color: var(--text-dark);
 }
 
-/* LinkedIn Button */
-.linkedin-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 12px;
-    font-size: 1em;
-    background-color: #0077b5; /* LinkedIn Blue */
-    color: white;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.linkedin-btn:hover {
-    background-color: #005582; /* Darker blue on hover */
-}
-
-.linkedin-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-}
-
 /* Hero Section */
 header {
     text-align: center;
