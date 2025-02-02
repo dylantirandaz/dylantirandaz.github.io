@@ -1,7 +1,7 @@
 /* Root Variables */
 :root {
-    --header-font: 'Alice', serif; 
-    --body-font: 'Times New Roman', serif; 
+    --header-font: 'Times New Roman', serif; /* Times New Roman for headers */
+    --body-font: 'Times New Roman', serif; /* Times New Roman for body text */
     --bg-color: #f9f9f9;
     --text-dark: #1a1a1a;
     --text-light: #707070;
@@ -20,7 +20,7 @@ body {
     font-family: var(--body-font);
     background-color: var(--bg-color);
     color: var(--text-dark);
-    line-height: 1.8;
+    line-height: 1.6;
     padding: 0 20px;
     text-align: center;
 }
@@ -55,20 +55,20 @@ nav ul li a:hover {
 /* Hero Section */
 header {
     text-align: center;
-    padding: 80px 0;
+    padding: 100px 0; /* Increased padding for more space */
 }
 
 header h1 {
     font-family: var(--header-font);
-    font-size: 2.8em;
+    font-size: 3em; /* Larger font size for the main header */
     font-weight: 700;
-    margin-bottom: 0.3em;
+    margin-bottom: 0.5em;
     color: var(--text-dark);
 }
 
 header p {
     font-family: var(--body-font);
-    font-size: 1.2em;
+    font-size: 1.3em; /* Slightly larger subtext */
     color: var(--text-light);
 }
 
@@ -76,28 +76,29 @@ header p {
 #about {
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 60px 20px; /* Increased padding for more space */
     text-align: center;
 }
 
 #about h2 {
     font-family: var(--header-font);
-    font-size: 2.2em;
-    font-weight: 600;
+    font-size: 2.5em; /* Larger font size for section headers */
+    font-weight: 700;
     margin-bottom: 1em;
     color: var(--text-dark);
 }
 
 #about p {
     font-family: var(--body-font);
-    font-size: 1.2em;
+    font-size: 1.2em; /* Slightly larger body text */
     color: var(--text-light);
-    line-height: 1.7;
+    line-height: 1.8; /* Increased line height for better readability */
+    margin-bottom: 1.5em;
 }
 
 /* Projects Section */
 #projects {
-    padding: 80px 20px;
+    padding: 100px 20px; /* Increased padding for more space */
     max-width: 1000px;
     margin: 0 auto;
     text-align: center;
@@ -105,10 +106,10 @@ header p {
 
 #projects h2 {
     font-family: var(--header-font);
-    font-size: 2.5em;
+    font-size: 2.5em; /* Larger font size for section headers */
     margin-bottom: 1.5em;
     color: var(--text-dark);
-    font-weight: 600;
+    font-weight: 700;
 }
 
 /* Grid for Projects */
@@ -122,7 +123,7 @@ header p {
 /* Project Card */
 .project-card {
     background-color: white;
-    padding: 20px;
+    padding: 25px; /* Increased padding for more space */
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -132,10 +133,10 @@ header p {
 
 .project-card h3 {
     font-family: var(--header-font);
-    font-size: 1.6em;
+    font-size: 1.8em; /* Larger font size for project titles */
     margin-bottom: 0.5em;
     color: var(--text-dark);
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .project-card p {
@@ -143,12 +144,12 @@ header p {
     font-size: 1.1em;
     color: var(--text-light);
     margin-bottom: 1.2em;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 /* Button Styling */
 .project-card a.btn {
-    padding: 10px 20px;
+    padding: 12px 24px; /* Slightly larger button */
     background-color: var(--accent-color);
     color: white;
     border-radius: 5px;
@@ -171,14 +172,14 @@ header p {
 #recommendations {
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 60px 20px; /* Increased padding for more space */
     text-align: center;
 }
 
 #recommendations h2 {
     font-family: var(--header-font);
-    font-size: 2.2em;
-    font-weight: 600;
+    font-size: 2.5em; /* Larger font size for section headers */
+    font-weight: 700;
     margin-bottom: 1em;
     color: var(--text-dark);
 }
@@ -187,7 +188,7 @@ header p {
     max-width: 600px;
     text-align: left;
     background: white;
-    padding: 20px;
+    padding: 25px; /* Increased padding for more space */
     margin: 10px auto;
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -197,7 +198,7 @@ header p {
     font-family: var(--body-font);
     font-size: 1.1em;
     color: var(--text-light);
-    line-height: 1.7;
+    line-height: 1.6;
 }
 
 /* Footer */
