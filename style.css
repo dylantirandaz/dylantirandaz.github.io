@@ -1,3 +1,4 @@
+/* Root Variables */
 :root {
     --header-font: 'Times New Roman', serif; 
     --body-font: 'Times New Roman', serif; 
@@ -7,12 +8,14 @@
     --accent-color: #007acc;
 }
 
+/* Reset Margin and Padding */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Body Styling */
 body {
     font-family: var(--body-font);
     background-color: var(--bg-color);
@@ -22,6 +25,7 @@ body {
     text-align: center;
 }
 
+/* Navigation */
 nav {
     display: flex;
     justify-content: center;
@@ -41,20 +45,21 @@ nav ul li a {
     color: var(--text-light);
     text-decoration: none;
     transition: color 0.3s ease;
-    font-family: var(--body-font); 
+    font-family: var(--body-font);
 }
 
 nav ul li a:hover {
     color: var(--text-dark);
 }
 
+/* Hero Section */
 header {
     text-align: center;
     padding: 80px 0;
 }
 
 header h1 {
-    font-family: var(--header-font); 
+    font-family: var(--header-font);
     font-size: 2.8em;
     font-weight: 700;
     margin-bottom: 0.3em;
@@ -62,7 +67,7 @@ header h1 {
 }
 
 header p {
-    font-family: var(--body-font); 
+    font-family: var(--body-font);
     font-size: 1.2em;
     color: var(--text-light);
 }
@@ -76,7 +81,7 @@ header p {
 }
 
 #about h2 {
-    font-family: var(--header-font); 
+    font-family: var(--header-font);
     font-size: 2.2em;
     font-weight: 600;
     margin-bottom: 1em;
@@ -84,7 +89,7 @@ header p {
 }
 
 #about p {
-    font-family: var(--body-font); 
+    font-family: var(--body-font);
     font-size: 1.2em;
     color: var(--text-light);
     line-height: 1.7;
@@ -99,13 +104,14 @@ header p {
 }
 
 #projects h2 {
-    font-family: var(--header-font); 
+    font-family: var(--header-font);
     font-size: 2.5em;
     margin-bottom: 1.5em;
     color: var(--text-dark);
     font-weight: 600;
 }
 
+/* Grid for Projects */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -113,6 +119,7 @@ header p {
     justify-items: center;
 }
 
+/* Project Card */
 .project-card {
     background-color: white;
     padding: 20px;
@@ -124,7 +131,7 @@ header p {
 }
 
 .project-card h3 {
-    font-family: var(--header-font); 
+    font-family: var(--header-font);
     font-size: 1.6em;
     margin-bottom: 0.5em;
     color: var(--text-dark);
@@ -132,13 +139,14 @@ header p {
 }
 
 .project-card p {
-    font-family: var(--body-font); 
+    font-family: var(--body-font);
     font-size: 1.1em;
     color: var(--text-light);
     margin-bottom: 1.2em;
     line-height: 1.5;
 }
 
+/* Button Styling */
 .project-card a.btn {
     padding: 10px 20px;
     background-color: var(--accent-color);
@@ -147,7 +155,7 @@ header p {
     font-size: 1.1em;
     text-decoration: none;
     transition: background-color 0.3s ease;
-    font-family: var(--body-font); 
+    font-family: var(--body-font);
 }
 
 .project-card:hover {
@@ -168,7 +176,7 @@ header p {
 }
 
 #recommendations h2 {
-    font-family: var(--header-font); 
+    font-family: var(--header-font);
     font-size: 2.2em;
     font-weight: 600;
     margin-bottom: 1em;
@@ -186,7 +194,7 @@ header p {
 }
 
 #recommendations section p {
-    font-family: var(--body-font); 
+    font-family: var(--body-font);
     font-size: 1.1em;
     color: var(--text-light);
     line-height: 1.7;
@@ -197,9 +205,10 @@ footer {
     text-align: center;
     padding: 2em 0;
     color: var(--text-light);
-    font-family: var(--body-font); 
+    font-family: var(--body-font);
 }
 
+/* Media Queries */
 @media (max-width: 768px) {
     nav ul {
         flex-direction: column;
