@@ -42,12 +42,12 @@ body {
   position: fixed;
   inset: 0;
   background: url('https://tripleampersand.org/wp-content/uploads/2025/05/FangedNumena.jpg') center/cover fixed;
-  opacity: 0;
+  opacity: 0.30;
   transition: opacity 1.2s ease;
   pointer-events: none;
   z-index: -1;
 }
-body.reveal #bg { opacity: 0.08; }
+body.reveal #bg { opacity: 0.58; }
 
 /* ===== Layout ===== */
 main {
@@ -83,6 +83,11 @@ nav[aria-label="primary"] a {
 }
 nav[aria-label="primary"] a:hover {
   color: var(--text);
+}
+section ul {
+  list-style: none;   
+  padding-left: 0;    
+  margin-left: 0;
 }
 
 /* ===== Project Cards ===== */
