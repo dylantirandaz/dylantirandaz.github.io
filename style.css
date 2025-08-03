@@ -45,7 +45,6 @@ body {
   pointer-events: none;
   z-index: -1;
 }
-
 body.reveal #bg { opacity: 0.05; }
 
 main {
