@@ -8,6 +8,28 @@
     <!-- Import Google Fonts for Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+<script>
+/* ----------  Dark-mode Toggle  ---------- */
+const btn = document.createElement('button');
+btn.className = 'theme-toggle';
+btn.setAttribute('aria-label','Toggle dark mode');
+document.body.appendChild(btn);
+
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+let current = localStorage.getItem('theme') || (prefersDark.matches ? 'dark' : 'light');
+applyTheme(current);
+
+btn.addEventListener('click', () => {
+  current = current === 'light' ? 'dark' : 'light';
+  applyTheme(current);
+  localStorage.setItem('theme', current);
+});
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  btn.textContent = theme === 'light' ? '🌞' : '🌙';
+}
+</script>
 <body>
     <!-- Navigation -->
     <nav>
