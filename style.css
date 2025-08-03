@@ -1,8 +1,6 @@
-/* ===== Font Imports ===== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap');
 
-/* ===== Design Tokens ===== */
 :root {
   --bg: #fafafa;
   --text: #111;
@@ -20,7 +18,6 @@
   --text-soft: #888;
 }
 
-/* ===== Reset ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
@@ -37,19 +34,20 @@ body {
   position: relative;
 }
 
-/* ===== Background Reveal ===== */
 #bg {
   position: fixed;
   inset: 0;
-  background: url('https://tripleampersand.org/wp-content/uploads/2025/05/FangedNumena.jpg') center/cover fixed;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
   opacity: 0.02;
   transition: opacity 0.5s ease;
   pointer-events: none;
   z-index: -1;
 }
+
 body.reveal #bg { opacity: 0.05; }
 
-/* ===== Layout ===== */
 main {
   max-width: var(--max-width);
   padding: 4rem 1.5rem;
@@ -63,14 +61,12 @@ h1 { font-size: clamp(2rem, 5vw + 1rem, 3rem); letter-spacing: 0.01em; }
 h2 { font-size: 1.5rem; margin-bottom: 1rem; }
 p, li { color: var(--text-soft); font-size: 1rem; }
 
-/* ===== Links ===== */
 a {
   color: var(--accent);
   text-decoration: none;
 }
 a:hover { text-decoration: underline; }
 
-/* ===== Hidden Nav ===== */
 nav[aria-label="primary"] {
   margin-top: 2.5rem;
   display: flex;
@@ -90,7 +86,6 @@ section ul {
   margin-left: 0;
 }
 
-/* ===== Project Cards ===== */
 .project-card {
   background: var(--bg);
   border: 1px solid var(--text-soft);
@@ -106,14 +101,28 @@ section ul {
   color: var(--accent);
 }
 
-/* ===== Footer ===== */
 footer {
   margin-top: 3rem;
   font-size: 0.875rem;
   color: var(--text-soft);
 }
+body.page-index #bg {
+  background: url('FangedNumena.jpg') center/cover fixed;
+}
 
-/* ===== Dark-Mode Toggle ===== */
+body.page-bookshelf #bg {
+  background: url('dante.jpg') center/cover fixed;
+}
+
+body.page-projects #bg {
+  background: url('napoleoncrossingthealps.jpg') center/cover fixed;
+}
+
+body.page-contact #bg {
+  background: url('the-sublime.jpg') center/cover fixed;
+}
+
+
 .theme-toggle {
   position: fixed;
   bottom: 1.5rem;
