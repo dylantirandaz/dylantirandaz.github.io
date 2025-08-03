@@ -1,181 +1,73 @@
-/* =====  Google Fonts  ===== */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap");
+/* ===== Font ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap');
 
-/* =====  Design Tokens (light & dark)  ===== */
 :root{
-  --font-body:"Inter",system-ui,sans-serif;
-  --font-head:"Crimson Text",serif;
-
-  /* Light */
-  --bg:#fdfdfd;
-  --bg-alt:#f7f7f9;
-  --text:#1a1a1a;
+  --bg:#fafafa;
+  --text:#111;
   --text-soft:#555;
-  --accent:#0a84ff;
-  --border:#e5e5ea;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.04);
-  --shadow-md:0 4px 12px rgba(0,0,0,.06);
-  --shadow-lg:0 12px 32px rgba(0,0,0,.08);
-  --radius:10px;
+  --accent:#0070f3;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-head:'Crimson Text',serif;
 }
 
 [data-theme="dark"]{
-  --bg:#121212;
-  --bg-alt:#1e1e1e;
-  --text:#f2f2f7;
-  --text-soft:#a1a1aa;
-  --accent:#0a84ff;
-  --border:#2c2c2e;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.3);
-  --shadow-md:0 4px 12px rgba(0,0,0,.4);
-  --shadow-lg:0 12px 32px rgba(0,0,0,.5);
+  --bg:#000;
+  --text:#fafafa;
+  --text-soft:#888;
 }
 
-/* =====  Reset & Base  ===== */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 body{
   font-family:var(--font-body);
-  line-height:1.65;
   color:var(--text);
   background:var(--bg);
-  transition:background .35s,color .35s;
-  scroll-behavior:smooth;
-}
-
-/* =====  Navigation  ===== */
-nav{
+  line-height:1.6;
   display:flex;
+  align-items:center;
   justify-content:center;
-  padding:1.5rem 1rem;
-  background:var(--bg-alt);
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:98;
-}
-nav ul{list-style:none;display:flex;gap:2rem}
-nav a{
-  font-weight:500;
-  color:var(--text-soft);
-  text-decoration:none;
-  transition:color .25s;
-}
-nav a:hover{color:var(--accent)}
-
-/* =====  Hero / Header  ===== */
-header{
   text-align:center;
-  padding:6rem 1.5rem 4rem;
-}
-header h1{
-  font-family:var(--font-head);
-  font-size:clamp(2.5rem,5vw+1rem,3.5rem);
-  font-weight:700;
-  margin-bottom:.25em;
-}
-header p{
-  font-size:1.25rem;
-  color:var(--text-soft);
+  transition:background .35s,color .35s;
+  overflow:hidden;
+  position:relative;
 }
 
-/* =====  Sections  ===== */
-section{
-  max-width:800px;
-  margin:0 auto 4rem;
-  padding:0 1.5rem;
+/* --- Background reveal --- */
+#bg{
+  position:absolute;
+  inset:0;
+  background:url('https://perr1n.com/images/background.png') center/cover fixed;
+  opacity:0;
+  transition:opacity 1.2s ease;
+  pointer-events:none;
+  z-index:-1;
 }
-section h2{
+body.reveal #bg{opacity:.08}
+
+/* --- Text --- */
+h1{
   font-family:var(--font-head);
-  font-size:2.25rem;
+  font-size:clamp(2.2rem,5vw+1rem,3rem);
   font-weight:600;
-  margin-bottom:1.5rem;
-  text-align:center;
+  letter-spacing:.01em;
 }
-section p{font-size:1.125rem;color:var(--text-soft)}
+p{margin-top:.5rem;font-size:clamp(.9rem,2vw+.2rem,1.1rem);color:var(--text-soft)}
 
-/* =====  Projects Grid  ===== */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:2rem;
-  max-width:1000px;
-  margin:0 auto;
-}
-.project-card{
-  background:var(--bg-alt);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:2rem;
-  box-shadow:var(--shadow-sm);
-  transition:transform .35s,box-shadow .35s;
-}
-.project-card:hover{
-  transform:translateY(-6px);
-  box-shadow:var(--shadow-lg);
-}
-.project-card h3{
-  font-family:var(--font-head);
-  font-size:1.5rem;
-  margin-bottom:.5rem;
-}
-.project-card p{margin-bottom:1.25rem}
-.btn{
-  display:inline-block;
-  padding:.65rem 1.25rem;
-  background:var(--accent);
-  color:#fff;
-  border-radius:var(--radius);
-  font-size:.95rem;
-  text-decoration:none;
-  transition:background .25s;
-}
-.btn:hover{background:#005ed1}
-
-/* =====  Lists (Bookshelf etc.)  ===== */
-ul{list-style:none;margin:0;padding:0}
-li{
-  background:var(--bg-alt);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:1rem 1.25rem;
-  margin-bottom:.75rem;
-  box-shadow:var(--shadow-sm);
-  transition:background .2s;
-}
-li:hover{background:var(--bg)}
-strong{font-weight:600;color:var(--accent)}
-
-/* =====  Footer  ===== */
-footer{
-  text-align:center;
-  padding:2rem 1rem 3rem;
-  font-size:.875rem;
-  color:var(--text-soft);
-}
-
-/* =====  Dark-Mode Toggle Button  ===== */
+/* --- Dark toggle --- */
 .theme-toggle{
   position:fixed;
-  bottom:2rem;
-  right:2rem;
+  bottom:1.5rem;
+  right:1.5rem;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:none;
   background:var(--accent);
   color:#fff;
-  border:none;
-  border-radius:50%;
-  width:48px;
-  height:48px;
-  font-size:1.5rem;
+  font-size:1.25rem;
   cursor:pointer;
-  box-shadow:var(--shadow-md);
-  transition:transform .3s;
-  z-index:99;
+  z-index:10;
+  transition:transform .25s;
 }
 .theme-toggle:hover{transform:scale(1.15)}
-
-/* =====  Responsive Tweaks  ===== */
-@media(max-width:600px){
-  nav ul{gap:1rem}
-  header{padding:4rem 1rem 3rem}
-}
