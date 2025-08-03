@@ -1,60 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dylan tirandaz | about</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Import Google Fonts for Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>dylan tirandaz</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preload" as="image" href="https://perr1n.com/images/background.png">
 </head>
-    <script>
-        /* ----------  Dark-mode Toggle  ---------- */
-        const btn = document.createElement('button');
-        btn.className = 'theme-toggle';
-        btn.setAttribute('aria-label','Toggle dark mode');
-        document.body.appendChild(btn);
 
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        let current = localStorage.getItem('theme') || (prefersDark.matches ? 'dark' : 'light');
-        applyTheme(current);
-
-        btn.addEventListener('click', () => {
-          current = current === 'light' ? 'dark' : 'light';
-          applyTheme(current);
-          localStorage.setItem('theme', current);
-        });
-
-        function applyTheme(theme){
-          document.documentElement.setAttribute('data-theme', theme);
-          btn.textContent = theme === 'light' ? '🌞' : '🌙';
-        }
-    </script>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="index.html">About</a></li>
-            <li><a href="projects.html">Projects</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><a href="bookshelf.html">Bookshelf</a></li>
-        </ul>
-    </nav>
-
+  <main>
     <header>
-        <h1>DYLAN TIRANDAZ</h1>
-        <p>computer science and physics undergraduate student.</p>
+      <h1>DYLAN TIRANDAZ</h1>
+      <p>computer science and physics undergraduate student.</p>
     </header>
 
     <section id="about">
-        <p>
-            i currently study computer science and physics at utd. previously i have worked as a software engineer focusing on computer vision, robotics, & data engineering. this summer, i will be @ fidelity investments as a swe intern, as of right now i am doing research in deep learning @ utd. i'm interested in cryptography, ml/ai, computer vision, natural language processing, multimodality, and robotics. aside from that i love to <a href="bookshelf.html">read</a> and work on fun <a href="projects.html">projects</a>
-        </p>
+      <p>
+        i currently study computer science and physics at utd. previously i have worked as a software engineer focusing on computer vision, robotics, & data engineering. this summer, i will be @ fidelity investments as a swe intern, as of right now i am doing research in deep learning @ utd. i'm interested in cryptography, ml/ai, computer vision, natural language processing, multimodality, and robotics. aside from that i love to <a href="bookshelf.html">read</a> and work on fun <a href="projects.html">projects</a>
+      </p>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 dylan tirandaz</p>
-    </footer>
+    <nav aria-label="primary">
+      <a href="index.html">About</a>
+      <a href="projects.html">Projects</a>
+      <a href="contact.html">Contact</a>
+      <a href="bookshelf.html">Bookshelf</a>
+    </nav>
+  </main>
+
+  <div id="bg"></div>
+  <script src="toggle.js"></script>
 </body>
 </html>
