@@ -119,6 +119,7 @@ body.page-projects #bg {
 
 body.page-contact #bg {
   background: url('the-sublime.jpg') center/cover fixed;
+  opacity: 0.05;
 }
 
 
