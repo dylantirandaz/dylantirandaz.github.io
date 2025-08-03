@@ -1,222 +1,197 @@
-/* Root Variables */
-:root {
-    --header-font: 'Times New Roman', serif; /* Times New Roman for headers */
-    --body-font: 'Times New Roman', serif; /* Times New Roman for body text */
-    --bg-color: #f9f9f9;
-    --text-dark: #1a1a1a;
-    --text-light: #707070;
-    --accent-color: #007acc;
+/* ----------  Google Font Imports  ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap");
+
+/* ----------  Design Tokens  ---------- */
+:root{
+  /* Colors */
+  --bg:        #fdfdfd;
+  --bg-alt:    #f7f7f9;
+  --text:      #222;
+  --text-soft: #555;
+  --accent:    #0a84ff;
+  --accent2:   #ff3b30;
+  --border:    #e5e5ea;
+
+  /* Typography */
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-head: "Crimson Text", serif;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.06);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,.08);
+
+  /* Radius */
+  --radius: 10px;
 }
 
-/* Reset Margin and Padding */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* ----------  Reset & Base  ---------- */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font-body);
+  line-height:1.65;
+  color:var(--text);
+  background:var(--bg);
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;
 }
 
-/* Body Styling */
-body {
-    font-family: var(--body-font);
-    background-color: var(--bg-color);
-    color: var(--text-dark);
-    line-height: 1.6;
-    padding: 0 20px;
-    text-align: center;
+/* ----------  Navigation  ---------- */
+nav{
+  display:flex;
+  justify-content:center;
+  padding:1.5rem 1rem;
+  background:var(--bg-alt);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:99;
+}
+nav ul{
+  list-style:none;
+  display:flex;
+  gap:2rem;
+}
+nav a{
+  font-weight:500;
+  color:var(--text-soft);
+  text-decoration:none;
+  transition:color .25s;
+}
+nav a:hover,
+nav a:focus{color:var(--accent)}
+
+/* ----------  Hero / Header  ---------- */
+header{
+  text-align:center;
+  padding:6rem 1.5rem 4rem;
+}
+header h1{
+  font-family:var(--font-head);
+  font-size:clamp(2.5rem,5vw+1rem,4rem);
+  font-weight:700;
+  margin-bottom:.25em;
+}
+header p{
+  font-size:1.25rem;
+  color:var(--text-soft);
 }
 
-/* Navigation */
-nav {
-    display: flex;
-    justify-content: center;
-    padding: 1.5em;
-    background-color: var(--bg-color);
-    border-bottom: 1px solid #e0e0e0;
+/* ----------  General Sections  ---------- */
+section{
+  max-width:800px;
+  margin:0 auto 4rem;
+  padding:0 1.5rem;
+}
+section h2{
+  font-family:var(--font-head);
+  font-size:2.25rem;
+  font-weight:600;
+  margin-bottom:1.25rem;
+  text-align:center;
+}
+section p{
+  font-size:1.125rem;
+  color:var(--text-soft);
 }
 
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 2em;
+/* ----------  Projects Grid  ---------- */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:2rem;
+  max-width:1000px;
+  margin:0 auto;
+}
+.project-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:2rem;
+  box-shadow:var(--shadow-sm);
+  transition:transform .3s,box-shadow .3s;
+}
+.project-card:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--shadow-lg);
+}
+.project-card h3{
+  font-family:var(--font-head);
+  font-size:1.5rem;
+  margin-bottom:.5rem;
+}
+.project-card p{
+  margin-bottom:1.25rem;
+}
+.project-card .btn{
+  display:inline-block;
+  padding:.65rem 1.25rem;
+  background:var(--accent);
+  color:#fff;
+  border-radius:var(--radius);
+  font-size:.95rem;
+  text-decoration:none;
+  transition:background .25s;
+}
+.project-card .btn:hover{background:#005ed1}
+
+/* ----------  Recommendations  ---------- */
+main > section:not(#projects){
+  max-width:700px;
+  margin:0 auto 3rem;
+}
+main > section h2{
+  border-bottom:2px solid var(--accent);
+  display:inline-block;
+  margin-bottom:1.5rem;
+}
+ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+li{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1rem 1.25rem;
+  margin-bottom:.75rem;
+  box-shadow:var(--shadow-sm);
+  transition:background .2s;
+}
+li:hover{background:var(--bg-alt)}
+strong{font-weight:600;color:var(--accent)}
+
+/* ----------  Contact / Footer  ---------- */
+#contact{
+  text-align:center;
+  padding:3rem 1.5rem;
+}
+#contact a{color:var(--accent);font-weight:600}
+footer{
+  text-align:center;
+  padding:2rem 1rem 3rem;
+  font-size:.875rem;
+  color:var(--text-soft);
 }
 
-nav ul li a {
-    font-size: 1.1em;
-    color: var(--text-light);
-    text-decoration: none;
-    transition: color 0.3s ease;
-    font-family: var(--body-font);
+/* ----------  Dark Mode (prefers-color-scheme)  ---------- */
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121212;
+    --bg-alt:#1e1e1e;
+    --text:#f2f2f7;
+    --text-soft:#a1a1aa;
+    --border:#2c2c2e;
+  }
+  li,.project-card{background:#1e1e1e;border-color:#333}
+  body{background:var(--bg)}
 }
 
-nav ul li a:hover {
-    color: var(--text-dark);
-}
-
-/* Hero Section */
-header {
-    text-align: center;
-    padding: 100px 0; /* Increased padding for more space */
-}
-
-header h1 {
-    font-family: var(--header-font);
-    font-size: 3em; /* Larger font size for the main header */
-    font-weight: 700;
-    margin-bottom: 0.5em;
-    color: var(--text-dark);
-}
-
-header p {
-    font-family: var(--body-font);
-    font-size: 1.3em; /* Slightly larger subtext */
-    color: var(--text-light);
-}
-
-/* About Section */
-#about {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 60px 20px; /* Increased padding for more space */
-    text-align: center;
-}
-
-#about h2 {
-    font-family: var(--header-font);
-    font-size: 2.5em; /* Larger font size for section headers */
-    font-weight: 700;
-    margin-bottom: 1em;
-    color: var(--text-dark);
-}
-
-#about p {
-    font-family: var(--body-font);
-    font-size: 1.2em; /* Slightly larger body text */
-    color: var(--text-light);
-    line-height: 1.8; /* Increased line height for better readability */
-    margin-bottom: 1.5em;
-}
-
-/* Projects Section */
-#projects {
-    padding: 100px 20px; /* Increased padding for more space */
-    max-width: 1000px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-#projects h2 {
-    font-family: var(--header-font);
-    font-size: 2.5em; /* Larger font size for section headers */
-    margin-bottom: 1.5em;
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-/* Grid for Projects */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 40px;
-    justify-items: center;
-}
-
-/* Project Card */
-.project-card {
-    background-color: white;
-    padding: 25px; /* Increased padding for more space */
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    max-width: 300px;
-    text-align: left;
-}
-
-.project-card h3 {
-    font-family: var(--header-font);
-    font-size: 1.8em; /* Larger font size for project titles */
-    margin-bottom: 0.5em;
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-.project-card p {
-    font-family: var(--body-font);
-    font-size: 1.1em;
-    color: var(--text-light);
-    margin-bottom: 1.2em;
-    line-height: 1.6;
-}
-
-/* Button Styling */
-.project-card a.btn {
-    padding: 12px 24px; /* Slightly larger button */
-    background-color: var(--accent-color);
-    color: white;
-    border-radius: 5px;
-    font-size: 1.1em;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    font-family: var(--body-font);
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.project-card a.btn:hover {
-    background-color: #005582;
-}
-
-/* Recommendations Section */
-#recommendations {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 60px 20px; /* Increased padding for more space */
-    text-align: center;
-}
-
-#recommendations h2 {
-    font-family: var(--header-font);
-    font-size: 2.5em; /* Larger font size for section headers */
-    font-weight: 700;
-    margin-bottom: 1em;
-    color: var(--text-dark);
-}
-
-#recommendations section {
-    max-width: 600px;
-    text-align: left;
-    background: white;
-    padding: 25px; /* Increased padding for more space */
-    margin: 10px auto;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-#recommendations section p {
-    font-family: var(--body-font);
-    font-size: 1.1em;
-    color: var(--text-light);
-    line-height: 1.6;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 2em 0;
-    color: var(--text-light);
-    font-family: var(--body-font);
-}
-
-/* Media Queries */
-@media (max-width: 768px) {
-    nav ul {
-        flex-direction: column;
-        gap: 1em;
-    }
-
-    .grid {
-        grid-template-columns: 1fr;
-    }
+/* ----------  Responsive Tweaks  ---------- */
+@media(max-width:600px){
+  nav ul{gap:1rem}
+  header{padding:4rem 1rem 3rem}
 }
