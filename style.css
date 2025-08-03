@@ -1,32 +1,38 @@
-/* ----------  Google Font Imports  ---------- */
+/* =====  Google Fonts  ===== */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap");
 
-/* ----------  Design Tokens  ---------- */
+/* =====  Design Tokens (light & dark)  ===== */
 :root{
-  /* Colors */
-  --bg:        #fdfdfd;
-  --bg-alt:    #f7f7f9;
-  --text:      #222;
-  --text-soft: #555;
-  --accent:    #0a84ff;
-  --accent2:   #ff3b30;
-  --border:    #e5e5ea;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-head:"Crimson Text",serif;
 
-  /* Typography */
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-head: "Crimson Text", serif;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.06);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,.08);
-
-  /* Radius */
-  --radius: 10px;
+  /* Light */
+  --bg:#fdfdfd;
+  --bg-alt:#f7f7f9;
+  --text:#1a1a1a;
+  --text-soft:#555;
+  --accent:#0a84ff;
+  --border:#e5e5ea;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.08);
+  --radius:10px;
 }
 
-/* ----------  Reset & Base  ---------- */
+[data-theme="dark"]{
+  --bg:#121212;
+  --bg-alt:#1e1e1e;
+  --text:#f2f2f7;
+  --text-soft:#a1a1aa;
+  --accent:#0a84ff;
+  --border:#2c2c2e;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);
+  --shadow-md:0 4px 12px rgba(0,0,0,.4);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.5);
+}
+
+/* =====  Reset & Base  ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
@@ -34,11 +40,11 @@ body{
   line-height:1.65;
   color:var(--text);
   background:var(--bg);
+  transition:background .35s,color .35s;
   scroll-behavior:smooth;
-  -webkit-text-size-adjust:100%;
 }
 
-/* ----------  Navigation  ---------- */
+/* =====  Navigation  ===== */
 nav{
   display:flex;
   justify-content:center;
@@ -47,30 +53,25 @@ nav{
   border-bottom:1px solid var(--border);
   position:sticky;
   top:0;
-  z-index:99;
+  z-index:98;
 }
-nav ul{
-  list-style:none;
-  display:flex;
-  gap:2rem;
-}
+nav ul{list-style:none;display:flex;gap:2rem}
 nav a{
   font-weight:500;
   color:var(--text-soft);
   text-decoration:none;
   transition:color .25s;
 }
-nav a:hover,
-nav a:focus{color:var(--accent)}
+nav a:hover{color:var(--accent)}
 
-/* ----------  Hero / Header  ---------- */
+/* =====  Hero / Header  ===== */
 header{
   text-align:center;
   padding:6rem 1.5rem 4rem;
 }
 header h1{
   font-family:var(--font-head);
-  font-size:clamp(2.5rem,5vw+1rem,4rem);
+  font-size:clamp(2.5rem,5vw+1rem,3.5rem);
   font-weight:700;
   margin-bottom:.25em;
 }
@@ -79,7 +80,7 @@ header p{
   color:var(--text-soft);
 }
 
-/* ----------  General Sections  ---------- */
+/* =====  Sections  ===== */
 section{
   max-width:800px;
   margin:0 auto 4rem;
@@ -89,15 +90,12 @@ section h2{
   font-family:var(--font-head);
   font-size:2.25rem;
   font-weight:600;
-  margin-bottom:1.25rem;
+  margin-bottom:1.5rem;
   text-align:center;
 }
-section p{
-  font-size:1.125rem;
-  color:var(--text-soft);
-}
+section p{font-size:1.125rem;color:var(--text-soft)}
 
-/* ----------  Projects Grid  ---------- */
+/* =====  Projects Grid  ===== */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
@@ -106,12 +104,12 @@ section p{
   margin:0 auto;
 }
 .project-card{
-  background:#fff;
+  background:var(--bg-alt);
   border:1px solid var(--border);
   border-radius:var(--radius);
   padding:2rem;
   box-shadow:var(--shadow-sm);
-  transition:transform .3s,box-shadow .3s;
+  transition:transform .35s,box-shadow .35s;
 }
 .project-card:hover{
   transform:translateY(-6px);
@@ -122,10 +120,8 @@ section p{
   font-size:1.5rem;
   margin-bottom:.5rem;
 }
-.project-card p{
-  margin-bottom:1.25rem;
-}
-.project-card .btn{
+.project-card p{margin-bottom:1.25rem}
+.btn{
   display:inline-block;
   padding:.65rem 1.25rem;
   background:var(--accent);
@@ -135,25 +131,12 @@ section p{
   text-decoration:none;
   transition:background .25s;
 }
-.project-card .btn:hover{background:#005ed1}
+.btn:hover{background:#005ed1}
 
-/* ----------  Recommendations  ---------- */
-main > section:not(#projects){
-  max-width:700px;
-  margin:0 auto 3rem;
-}
-main > section h2{
-  border-bottom:2px solid var(--accent);
-  display:inline-block;
-  margin-bottom:1.5rem;
-}
-ul{
-  list-style:none;
-  margin:0;
-  padding:0;
-}
+/* =====  Lists (Bookshelf etc.)  ===== */
+ul{list-style:none;margin:0;padding:0}
 li{
-  background:#fff;
+  background:var(--bg-alt);
   border:1px solid var(--border);
   border-radius:var(--radius);
   padding:1rem 1.25rem;
@@ -161,15 +144,10 @@ li{
   box-shadow:var(--shadow-sm);
   transition:background .2s;
 }
-li:hover{background:var(--bg-alt)}
+li:hover{background:var(--bg)}
 strong{font-weight:600;color:var(--accent)}
 
-/* ----------  Contact / Footer  ---------- */
-#contact{
-  text-align:center;
-  padding:3rem 1.5rem;
-}
-#contact a{color:var(--accent);font-weight:600}
+/* =====  Footer  ===== */
 footer{
   text-align:center;
   padding:2rem 1rem 3rem;
@@ -177,20 +155,26 @@ footer{
   color:var(--text-soft);
 }
 
-/* ----------  Dark Mode (prefers-color-scheme)  ---------- */
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#121212;
-    --bg-alt:#1e1e1e;
-    --text:#f2f2f7;
-    --text-soft:#a1a1aa;
-    --border:#2c2c2e;
-  }
-  li,.project-card{background:#1e1e1e;border-color:#333}
-  body{background:var(--bg)}
+/* =====  Dark-Mode Toggle Button  ===== */
+.theme-toggle{
+  position:fixed;
+  bottom:2rem;
+  right:2rem;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:50%;
+  width:48px;
+  height:48px;
+  font-size:1.5rem;
+  cursor:pointer;
+  box-shadow:var(--shadow-md);
+  transition:transform .3s;
+  z-index:99;
 }
+.theme-toggle:hover{transform:scale(1.15)}
 
-/* ----------  Responsive Tweaks  ---------- */
+/* =====  Responsive Tweaks  ===== */
 @media(max-width:600px){
   nav ul{gap:1rem}
   header{padding:4rem 1rem 3rem}
