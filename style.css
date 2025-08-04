@@ -116,7 +116,7 @@ footer {
 }
 body.page-index #bg {
   background: url('FangedNumena.jpg') center/cover fixed;
-  opacity: 0.03;
+  opacity: 0.04;
 }
 
 body.page-bookshelf #bg {
@@ -126,7 +126,7 @@ body.page-bookshelf #bg {
 
 body.page-projects #bg {
   background: url('napoleoncrossingthealps.jpg') center/cover fixed;
-  opacity: 0.08;
+  opacity: 0.09;
 }
 
 body.page-contact #bg {
