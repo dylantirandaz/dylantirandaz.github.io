@@ -116,22 +116,22 @@ footer {
 }
 body.page-index #bg {
   background: url('FangedNumena.jpg') center/cover fixed;
-  opacity: 0.04;
+  opacity: 0.044;
 }
 
 body.page-bookshelf #bg {
   background: url('dante.jpg') center/cover fixed;
-  opacity: 0.08;
+  opacity: 0.084;
 }
 
 body.page-projects #bg {
   background: url('napoleoncrossingthealps.jpg') center/cover fixed;
-  opacity: 0.09;
+  opacity: 0.094;
 }
 
 body.page-contact #bg {
   background: url('the-sublime.jpg') center/cover fixed;
-  opacity: 0.13;
+  opacity: 0.134;
 }
 
 
