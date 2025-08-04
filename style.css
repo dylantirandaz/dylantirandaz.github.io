@@ -47,6 +47,13 @@ body.reveal #bg { opacity: 0.05; }
 main {
   max-width: var(--max-width);
   padding: 4rem 1.5rem;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 2rem 0.5rem;
+  }
 }
 
 h1, h2 {

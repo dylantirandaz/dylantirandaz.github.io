@@ -5,8 +5,7 @@
   document.body.appendChild(btn);
 
   const stored = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  let mode = stored || (prefersDark ? 'dark' : 'light');
+  let mode = stored || 'dark';
   apply(mode);
 
   btn.addEventListener('click', () => {
