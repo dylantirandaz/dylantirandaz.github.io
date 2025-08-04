@@ -25,7 +25,6 @@ body {
   color: var(--text);
   background: var(--bg);
   line-height: 1.6;
-  text-align: center;
   transition: background .35s, color .35s;
   overflow-x: hidden;
   position: relative;
@@ -48,6 +47,10 @@ main {
   max-width: var(--max-width);
   padding: 4rem 1.5rem;
   margin: 0 auto;
+}
+
+header, nav[aria-label="primary"] {
+  text-align: center;
 }
 
 @media (max-width: 600px) {
