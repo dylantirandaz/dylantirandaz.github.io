@@ -161,41 +161,41 @@ section {
 }
 
 .experience-list {
-  font-family: 'Crimson Text', serif;
-  font-size: 1.08rem;
-  border-left: 4px solid #e94f37;
-  padding-left: 1.25rem;
-  margin-bottom: 2.5rem;
-  background: linear-gradient(100deg, rgba(233,79,55,0.04) 0%, rgba(0,0,0,0.01) 100%);
+  font-family: 'Cormorant Garamond', serif; 
+  font-size: 1.1rem; 
+  border-left: 3px double #a52a2a;
+  padding-left: 1.1rem;
+  margin-bottom: 2.2rem;
+  background: linear-gradient(100deg, rgba(165,42,42,0.03) 0%, rgba(0,0,0,0.01) 100%);
 }
 
 .experience-list li {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
   position: relative;
-  color: #b23c1f;
-  transform: rotate(-1deg);
+  color: #541a1a; 
+  transform: rotate(-0.5deg); 
   transition: 
     color 0.3s,
     background 0.3s,
-    transform 0.18s cubic-bezier(.68,-0.55,.27,1.55);
-  background: rgba(255,255,255,0.02);
-  border-radius: 4px;
-  padding: 0.15em 0.5em 0.15em 0.2em;
+    transform 0.2s cubic-bezier(.68,-0.55,.27,1.55);
+  background: rgba(255,255,255,0.01);
+  border-radius: 3px;
+  padding: 0.1em 0.4em;
 }
 
 .experience-list li::before {
-  content: "⧫";
+  content: "✠";
   position: absolute;
-  left: -1.2rem;
-  color: #e94f37;
-  font-size: 0.95em;
+  left: -1.1rem;
+  color: #a52a2a;
+  font-size: 0.85em;
   top: 0.1em;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .experience-list li:hover {
-  color: #4f9de9;
-  background: rgba(79,157,233,0.06);
-  transform: rotate(1deg) scale(1.02);
+  color: #0056b3;
+  background: rgba(0,86,179,0.04);
+  transform: rotate(0.5deg) scale(1.01);
   cursor: pointer;
 }
