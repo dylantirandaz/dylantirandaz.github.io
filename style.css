@@ -149,3 +149,19 @@ body.page-contact #bg {
   transition: transform 0.25s;
 }
 .theme-toggle:hover { transform: scale(1.15); }
+
+section {
+  margin-bottom: 2.5rem;
+}
+
+#about p {
+  margin-bottom: 1.25rem;
+}
+
+.experience-list {
+  margin-bottom: 1.25rem;
+}
+
+.experience-list li {
+  margin-bottom: 0.75rem;
+}
