@@ -6,7 +6,7 @@
     <title>Masked Diffusion Language Modeling on Infinite Jest</title>
     <meta
       name="description"
-      content="A RoBERTa-style masked denoiser adapted into a small text diffusion language model over Infinite Jest."
+      content="A RoBERTa-style masked denoiser posttrained into a small text diffusion language model over Infinite Jest."
     />
     <link rel="stylesheet" href="/projects.html/infinite-diffusion/styles.css" />
   </head>
@@ -22,7 +22,7 @@
           <p class="kicker">Infinite Diffusion</p>
           <h1>Masked Diffusion Language Modeling on Infinite Jest</h1>
           <p class="dek">
-            I adapted a RoBERTa-style masked denoiser into a small text diffusion model. The model generates by refining a noisy continuation canvas, not by predicting the next token.
+            I posttrained a RoBERTa-style masked denoiser on Infinite Jest and used it as a small text diffusion model. The model generates by refining a noisy continuation canvas, not by predicting the next token.
           </p>
           <div class="meta">
             <span>Dylan Tirandaz</span>
@@ -45,10 +45,13 @@
         </nav>
 
         <p class="lede">
-          I treated text generation as iterative denoising over a fixed token canvas. A prompt is held fixed, the continuation span is initialized as noise, and a bidirectional masked language model repeatedly predicts cleaner token states for the whole span.
+          I wanted this to be a diffusion language model in the literal sense I cared about: not a chatbot wrapped in diffusion language, and not a next-token model with a different sampler. I treat generation as iterative denoising over a fixed token canvas. A prompt is held fixed, the continuation span is initialized as noise, and a bidirectional masked language model repeatedly predicts cleaner token states for the whole span.
         </p>
         <p>
-          The active checkpoint is <code>outputs/roberta-large-infinite-jest-mdlm-subs-selfcond-step500-preserved</code>. The base architecture is RoBERTa-large. I adapted it on <code>data/infinite_jest.txt</code>. The resulting model should be described narrowly: a RoBERTa-style masked denoiser adapted into a small text diffusion model over a single literary corpus. It is not a from-scratch foundation model.
+          The active checkpoint is <code>outputs/roberta-large-infinite-jest-mdlm-subs-selfcond-step500-preserved</code>. The base architecture is RoBERTa-large. I posttrained it on <code>data/infinite_jest.txt</code>. The style is not added with a prompt, a hand-written template, or a postprocessing pass. It comes from the training distribution: the denoising targets are book tokens from Infinite Jest. Whatever DFW-like behavior shows up in the samples comes from pushing the masked denoiser toward that corpus.
+        </p>
+        <p>
+          The resulting model should be described narrowly: a RoBERTa-style masked denoiser posttrained into a small text diffusion model over one literary corpus. It is not a from-scratch foundation model.
         </p>
 
         <section id="formulation">
@@ -63,10 +66,10 @@ attention mask:   bidirectional
 training loss:    denoising cross entropy, not causal LM loss</code></pre>
 
           <p>
-            The denoiser is trained to estimate <code>p(x0 | xt, t)</code> for the corrupted positions. During generation, I reverse the process approximately: start from a noisy continuation and repeatedly apply the denoiser until the canvas stabilizes.
+            The denoiser is trained to estimate <code>p(x0 | xt, t)</code> for the corrupted book tokens. During generation, I reverse the process approximately: start from a noisy continuation and repeatedly apply the denoiser until the canvas stabilizes.
           </p>
           <p>
-            A causal LM represents text as <code>product_i p(x_i | x_&lt;i)</code>. The diffusion sampler instead keeps a full continuation canvas in memory and revises positions in parallel.
+            This is the part I care about most. A causal LM represents text as <code>product_i p(x_i | x_&lt;i)</code>. The diffusion sampler instead keeps a full continuation canvas in memory and revises positions in parallel.
           </p>
         </section>
 
@@ -81,7 +84,7 @@ selected token -> random vocabulary token
 unselected token -> original token</code></pre>
 
           <p>
-            The random-token branch matters because the sampler does not begin from pure <code>[MASK]</code> tokens. It begins from uniform vocabulary noise. A model trained only on mask replacement can learn a fill-in-the-blank task that is easier than the sampling problem. Mixed corruption moves the training distribution closer to the inference distribution I use at sampling time.
+            The random-token branch matters because the sampler does not begin from pure <code>[MASK]</code> tokens. It begins from uniform vocabulary noise. A model trained only on mask replacement can learn a fill-in-the-blank task that is easier than the sampling problem. Mixed corruption moves training closer to the inference distribution I actually use.
           </p>
 
           <div class="table-wrap">
@@ -108,7 +111,7 @@ unselected token -> original token</code></pre>
           </div>
 
           <p>
-            The <code>mdlm-subs</code> setting removes special tokens and <code>&lt;mask&gt;</code> from the clean prediction space. The target is always a real text token from the corpus. I reweight the loss by the sampled noise rate with a cap, which keeps high-noise and low-noise cases in the objective without letting very small corruption rates dominate the update.
+            The <code>mdlm-subs</code> setting removes special tokens and <code>&lt;mask&gt;</code> from the clean prediction space. The target is always a real Infinite Jest token. I reweight the loss by the sampled noise rate with a cap, which keeps high-noise and low-noise cases in the objective without letting very small corruption rates dominate the update.
           </p>
 
           <div class="callout">
@@ -180,11 +183,11 @@ unselected token -> original token</code></pre>
           <pre><code>I am seated in an office, surrounded by heads and bodies. I have been there for a few short hours. My desk's right next to the door of the room. The door's white, and slightly deformed, and the back of a chair. It's clean, bright, and tidy.</code></pre>
 
           <p>
-            This is conditional generation. It is not an attempt to recover the original paragraph from the book.
+            This is conditional generation in the book's learned local style. It is not an attempt to recover the original paragraph.
           </p>
 
           <p>
-            The second trace uses a different sentence from the corpus. I included it because it shows a common failure mode of this checkpoint. The model stays near the topic and local style for a short span, then degrades into brittle phrase structure and acronym-like fragments.
+            The second trace uses a different sentence from the corpus. I included it because it shows the model honestly. It can stay near the topic and local style for a short span, then it degrades into brittle phrase structure and acronym-like fragments.
           </p>
 
           <figure class="figure wide">
@@ -230,19 +233,19 @@ unselected token -> original token</code></pre>
         <section id="interpretation">
           <h2>Interpretation</h2>
           <p>
-            I think the experiment supports a narrow claim: a masked language model can be adapted into a small text diffusion generator by training it to denoise variable-rate mask and uniform-token corruption, then sampling with full-canvas refinement.
+            I think the experiment supports a narrow claim: a masked language model can be posttrained into a small text diffusion generator by training it to denoise variable-rate mask and uniform-token corruption, then sampling with full-canvas refinement.
           </p>
           <p>
             The strongest implementation details in this run were mixed corruption, high-noise continuation training, uniform re-noising, entropy-based token retention, and self-conditioning.
           </p>
           <p>
-            The result is not broad fluency. The model can produce short locally coherent continuations, but it still repeats, loses syntax, and collapses into malformed fragments. The useful property is structural: generation is represented as refinement of a noisy canvas rather than as next-token prediction.
+            The result is not broad fluency. The model can produce short locally coherent continuations that have some of the Infinite Jest distribution in them, but it still repeats, loses syntax, and collapses into malformed fragments. The useful property is structural: generation is represented as refinement of a noisy canvas rather than as next-token prediction.
           </p>
         </section>
 
         <footer class="foot">
           <p>
-            Built from the Infinite Jest masked diffusion experiment. All reported samples use the step-500 checkpoint and fixed sampling settings.
+            Built from the Infinite Jest posttraining run. All reported samples use the step-500 checkpoint and fixed sampling settings.
           </p>
         </footer>
       </article>
