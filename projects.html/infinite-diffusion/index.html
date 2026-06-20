@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Masked Diffusion Language Modeling on Infinite Jest</title>
+    <meta
+      name="description"
+      content="A RoBERTa-style masked denoiser adapted into a small text diffusion language model over Infinite Jest."
+    />
+    <link rel="stylesheet" href="/projects.html/infinite-diffusion/styles.css" />
+  </head>
+  <body>
+    <div class="site">
+      <nav class="nav" aria-label="Site">
+        <a href="/">dylantirandaz</a>
+        <a href="/projects.html">projects</a>
+      </nav>
+
+      <article class="article">
+        <header>
+          <p class="kicker">Infinite Diffusion</p>
+          <h1>Masked Diffusion Language Modeling on Infinite Jest</h1>
+          <p class="dek">
+            I adapted a RoBERTa-style masked denoiser into a small text diffusion model. The model generates by refining a noisy continuation canvas, not by predicting the next token.
+          </p>
+          <div class="meta">
+            <span>Dylan Tirandaz</span>
+            <span>June 20, 2026</span>
+            <span>masked diffusion LM</span>
+          </div>
+        </header>
+
+        <nav class="toc" aria-label="Article sections">
+          <strong>Contents</strong>
+          <ol>
+            <li><a href="#formulation">Basic formulation</a></li>
+            <li><a href="#corruption">Corruption process</a></li>
+            <li><a href="#d3pm">Relation to D3PM</a></li>
+            <li><a href="#sampling">Sampling procedure</a></li>
+            <li><a href="#traces">Denoising traces</a></li>
+            <li><a href="#ablation">Sampler ablation</a></li>
+            <li><a href="#interpretation">Interpretation</a></li>
+          </ol>
+        </nav>
+
+        <p class="lede">
+          I treated text generation as iterative denoising over a fixed token canvas. A prompt is held fixed, the continuation span is initialized as noise, and a bidirectional masked language model repeatedly predicts cleaner token states for the whole span.
+        </p>
+        <p>
+          The active checkpoint is <code>outputs/roberta-large-infinite-jest-mdlm-subs-selfcond-step500-preserved</code>. The base architecture is RoBERTa-large. I adapted it on <code>data/infinite_jest.txt</code>. The resulting model should be described narrowly: a RoBERTa-style masked denoiser adapted into a small text diffusion model over a single literary corpus. It is not a from-scratch foundation model.
+        </p>
+
+        <section id="formulation">
+          <h2>Basic formulation</h2>
+          <p>
+            Let <code>x0</code> be a clean token sequence from the corpus. I split the sequence into a visible prefix and a continuation region. The prefix is left unchanged. The continuation region is corrupted according to a sampled noise rate <code>t</code>.
+          </p>
+
+          <pre><code>model input:      visible prefix + corrupted continuation
+model target:     clean continuation tokens at corrupted positions
+attention mask:   bidirectional
+training loss:    denoising cross entropy, not causal LM loss</code></pre>
+
+          <p>
+            The denoiser is trained to estimate <code>p(x0 | xt, t)</code> for the corrupted positions. During generation, I reverse the process approximately: start from a noisy continuation and repeatedly apply the denoiser until the canvas stabilizes.
+          </p>
+          <p>
+            A causal LM represents text as <code>product_i p(x_i | x_&lt;i)</code>. The diffusion sampler instead keeps a full continuation canvas in memory and revises positions in parallel.
+          </p>
+        </section>
+
+        <section id="corruption">
+          <h2>Corruption process</h2>
+          <p>
+            I used mixed discrete corruption. Selected continuation positions are corrupted in one of two ways:
+          </p>
+
+          <pre><code>selected token -> [MASK]
+selected token -> random vocabulary token
+unselected token -> original token</code></pre>
+
+          <p>
+            The random-token branch matters because the sampler does not begin from pure <code>[MASK]</code> tokens. It begins from uniform vocabulary noise. A model trained only on mask replacement can learn a fill-in-the-blank task that is easier than the sampling problem. Mixed corruption moves the training distribution closer to the inference distribution I use at sampling time.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th class="number">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Objective</td><td class="number">mdlm-subs</td></tr>
+                <tr><td>Corruption</td><td class="number">mixed</td></tr>
+                <tr><td>Uniform corruption fraction</td><td class="number">0.75</td></tr>
+                <tr><td>Mask distribution</td><td class="number">high</td></tr>
+                <tr><td>Full mask fraction</td><td class="number">0.35</td></tr>
+                <tr><td>Loss weighting</td><td class="number">mdlm</td></tr>
+                <tr><td>Prefix length</td><td class="number">64 tokens</td></tr>
+                <tr><td>Sequence length</td><td class="number">256 tokens</td></tr>
+                <tr><td>Self-conditioning probability</td><td class="number">0.25</td></tr>
+                <tr><td>Self-conditioning strength</td><td class="number">0.5</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            The <code>mdlm-subs</code> setting removes special tokens and <code>&lt;mask&gt;</code> from the clean prediction space. The target is always a real text token from the corpus. I reweight the loss by the sampled noise rate with a cap, which keeps high-noise and low-noise cases in the objective without letting very small corruption rates dominate the update.
+          </p>
+
+          <div class="callout">
+            <p>
+              I continued the run to 1000 steps, but validation selected the earlier checkpoint: step 500 reached validation loss 4.8792, while step 1000 ended at 5.2819. The samples below use step 500.
+            </p>
+          </div>
+        </section>
+
+        <section id="d3pm">
+          <h2>Relation to D3PM</h2>
+          <p>
+            After building this run, I checked <a href="https://arxiv.org/abs/2107.03006">Austin et al.'s D3PM paper</a>. The closest formal analogue is the absorbing-state text diffusion process: tokens either stay unchanged or move into an absorbing mask state, and the network predicts the clean sequence <code>x0</code> from a corrupted sequence <code>xt</code>.
+          </p>
+          <p>
+            My current sampler is not an exact D3PM reverse chain. It uses mixed mask and random-token corruption during training, then entropy-based uniform re-noising at sampling time. I treat that sampler as a practical full-canvas refinement heuristic. The clean next baseline is a pure absorbing <code>[MASK]</code> D3PM trained on the same corpus, with loss-weighting and step-count ablations against this checkpoint.
+          </p>
+        </section>
+
+        <section id="sampling">
+          <h2>Sampling procedure</h2>
+          <p>
+            The sampler is full-canvas refinement. It initializes the continuation region with uniform token noise. Each reverse step predicts every generated position. Positions with lower uncertainty are retained. Positions with higher uncertainty are replaced with fresh noise and predicted again.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sampler parameter</th>
+                  <th class="number">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Sampler</td><td class="number">refine</td></tr>
+                <tr><td>Initial noise</td><td class="number">uniform</td></tr>
+                <tr><td>Re-noise</td><td class="number">uniform</td></tr>
+                <tr><td>Steps</td><td class="number">48</td></tr>
+                <tr><td>Top-k</td><td class="number">64</td></tr>
+                <tr><td>Temperature</td><td class="number">0.8 to 0.4</td></tr>
+                <tr><td>Unmask schedule</td><td class="number">cosine</td></tr>
+                <tr><td>Remask strategy</td><td class="number">entropy</td></tr>
+                <tr><td>Self-conditioning strength</td><td class="number">0.5</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            I measure uncertainty from the predicted distribution at each generated position. Low-entropy positions are treated as more stable. High-entropy positions are treated as unresolved and are re-noised.
+          </p>
+          <p>
+            Self-conditioning adds state between reverse steps. The previous step's predicted token distribution is projected through the embedding table to form an expected token embedding. That embedding is blended into the next denoising pass at generated positions. The model still predicts all positions in parallel. Self-conditioning does not introduce a left-to-right factorization.
+          </p>
+        </section>
+
+        <section id="traces">
+          <h2>Denoising traces</h2>
+          <p>
+            The first trace uses a one-sentence prompt from the corpus. I keep the prompt fixed and sample the continuation by iterative denoising.
+          </p>
+
+          <figure class="figure wide">
+            <img src="/projects.html/infinite-diffusion/office.gif" alt="A masked diffusion trace for an office prompt, where blank spans fill in over denoising passes." />
+            <figcaption>
+              The continuation starts as uniform token noise and is refined over reverse diffusion passes.
+            </figcaption>
+          </figure>
+
+          <pre><code>I am seated in an office, surrounded by heads and bodies. I have been there for a few short hours. My desk's right next to the door of the room. The door's white, and slightly deformed, and the back of a chair. It's clean, bright, and tidy.</code></pre>
+
+          <p>
+            This is conditional generation. It is not an attempt to recover the original paragraph from the book.
+          </p>
+
+          <p>
+            The second trace uses a different sentence from the corpus. I included it because it shows a common failure mode of this checkpoint. The model stays near the topic and local style for a short span, then degrades into brittle phrase structure and acronym-like fragments.
+          </p>
+
+          <figure class="figure wide">
+            <img src="/projects.html/infinite-diffusion/tennis.gif" alt="A masked diffusion trace for a tennis prompt, showing a less stable generated continuation." />
+            <figcaption>
+              A less stable sample. The denoising process remains visible, but the final continuation is syntactically brittle.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section id="ablation">
+          <h2>Sampler ablation</h2>
+          <p>
+            I evaluated three samplers on the same checkpoint. The sweep used two prompts, three seeds, and 48 denoising steps.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sampler</th>
+                  <th class="number">Quality</th>
+                  <th class="number">Unique word fraction</th>
+                  <th class="number">Repeated bigrams</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>mask-refine</td><td class="number">-3.755</td><td class="number">0.594</td><td class="number">6.17</td></tr>
+                <tr><td>uniform-refine</td><td class="number">26.132</td><td class="number">0.722</td><td class="number">2.17</td></tr>
+                <tr><td>uniform-selfcond</td><td class="number">27.258</td><td class="number">0.736</td><td class="number">2.17</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            The quality score is a local diagnostic. It rewards generated length and lexical diversity and penalizes repetition and punctuation collapse. It is not a general language-model benchmark. In this setting I treat it as useful because the ranking matches sample inspection.
+          </p>
+          <p>
+            Uniform-state refinement outperforms mask-only refinement. This is consistent with the training setup. The model was exposed to random-token corruption, and the sampler uses random-token initialization and re-noising. Self-conditioning gives a smaller gain on this sweep.
+          </p>
+        </section>
+
+        <section id="interpretation">
+          <h2>Interpretation</h2>
+          <p>
+            I think the experiment supports a narrow claim: a masked language model can be adapted into a small text diffusion generator by training it to denoise variable-rate mask and uniform-token corruption, then sampling with full-canvas refinement.
+          </p>
+          <p>
+            The strongest implementation details in this run were mixed corruption, high-noise continuation training, uniform re-noising, entropy-based token retention, and self-conditioning.
+          </p>
+          <p>
+            The result is not broad fluency. The model can produce short locally coherent continuations, but it still repeats, loses syntax, and collapses into malformed fragments. The useful property is structural: generation is represented as refinement of a noisy canvas rather than as next-token prediction.
+          </p>
+        </section>
+
+        <footer class="foot">
+          <p>
+            Built from the Infinite Jest masked diffusion experiment. All reported samples use the step-500 checkpoint and fixed sampling settings.
+          </p>
+        </footer>
+      </article>
+    </div>
+  </body>
+</html>
