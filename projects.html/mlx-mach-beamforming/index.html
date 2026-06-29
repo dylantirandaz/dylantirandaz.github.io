@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Validating MLX Beamforming Against MACH/CUDA</title>
+    <meta
+      name="description"
+      content="A native Apple Silicon MLX beamforming backend for microbubble ULM, validated against the MACH/CUDA reference on synthetic and real ultratrace data."
+    />
+    <link rel="stylesheet" href="/projects.html/mlx-mach-beamforming/styles.css" />
+  </head>
+  <body>
+    <div class="site">
+      <nav class="nav" aria-label="Site">
+        <a href="/">dylantirandaz</a>
+        <a href="/projects.html">projects</a>
+      </nav>
+
+      <article class="article">
+        <header>
+          <p class="kicker">Microbubbles</p>
+          <h1>Validating MLX Beamforming Against MACH/CUDA</h1>
+          <p class="dek">
+            I added a native Apple Silicon backend for microbubble beamforming and checked it against the CUDA reference path on synthetic data and one real ultratrace acquisition.
+          </p>
+          <div class="meta">
+            <span>Dylan Tirandaz</span>
+            <span>June 29, 2026</span>
+            <span>MLX beamforming</span>
+            <span><a href="https://github.com/dylantirandaz/microbubbles">github repo</a></span>
+          </div>
+        </header>
+
+        <nav class="toc" aria-label="Article sections">
+          <strong>Contents</strong>
+          <ol>
+            <li><a href="#backend">Backend port</a></li>
+            <li><a href="#synthetic">Synthetic reference</a></li>
+            <li><a href="#real">Real acquisition</a></li>
+            <li><a href="#comparison">Comparison</a></li>
+            <li><a href="#limits">What this does not prove</a></li>
+          </ol>
+        </nav>
+
+        <p class="lede">
+          The <code>microbubbles</code> beamforming path was CUDA-only in practice. The dependency that mattered was MACH, a CUDA/CuPy beamforming kernel. The data format, preprocessing, grid construction, and downstream ULM pipeline were not inherently NVIDIA-specific. The missing piece on a MacBook was the actual delay-and-sum backend.
+        </p>
+        <p>
+          I added an MLX backend for Apple Silicon and kept the rest of the path fixed. The goal was not to make a new beamformer with different assumptions. The goal was a backend swap: same neutral ultratrace input, same grid math, same transmit-delay handling, and the same output H5 layout.
+        </p>
+
+        <pre><code>acquisitions/&lt;id&gt;/meta/compound_image
+acquisitions/&lt;id&gt;/meta/grid/{x,y,z}</code></pre>
+
+        <p>
+          The claim is narrow: MLX should reproduce the MACH beamforming result closely enough that I can use a MacBook for local beamforming work, while keeping MACH as the CUDA reference.
+        </p>
+
+        <section id="backend">
+          <h2>Backend Port</h2>
+          <p>
+            The MLX backend implements the same delay-and-sum pieces as the MACH path:
+          </p>
+
+          <ul>
+            <li>neutral IQ preprocessing</li>
+            <li>transmit delay normalization</li>
+            <li>imaging grid construction</li>
+            <li>receive aperture selection from f-number</li>
+            <li>linear interpolation over the sample axis</li>
+            <li>Tukey receive apodization</li>
+            <li>modulation phase correction</li>
+            <li>transmit-angle compounding</li>
+            <li>final layout as <code>(frames, elev, z, x)</code></li>
+          </ul>
+
+          <p>The CLI now exposes both backends:</p>
+
+          <pre><code>ultratrace-ulm beamform --backend mlx ...
+ultratrace-ulm beamform --backend mach ...</code></pre>
+
+          <p>
+            The main risk was not wiring. The risk was a quiet numerical mismatch: one backend looking plausible while drifting from the CUDA reference. So I treated the port as a reference-comparison problem.
+          </p>
+        </section>
+
+        <section id="synthetic">
+          <h2>Synthetic Reference</h2>
+          <p>
+            I started with a deterministic synthetic case. I ran the same small input through MACH on Modal, returned the result as an <code>.npz</code>, and compared it locally against MLX.
+          </p>
+
+          <pre><code>shape: (2, 1, 3, 2)
+relative_l2: 1.6909404e-05
+magnitude_corr: 1</code></pre>
+
+          <p>
+            This covered the basic mechanics: interpolation, apodization, phase correction, and compounding. It was useful, but still too clean. A synthetic test can pass while the real H5 path is wrong.
+          </p>
+        </section>
+
+        <section id="real">
+          <h2>Real Acquisition</h2>
+          <p>
+            The public sample ultratrace H5 is about 98 GB. I did not want to move the full file just to check one backend. I added an HTTP range reader and extracted only acquisition 0 into a one-acquisition neutral H5.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Dataset</th>
+                  <th>Shape</th>
+                  <th class="number">Type / size</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>iq_frames</code></td><td><code>(702, 5, 1, 134, 256)</code></td><td class="number">complex64, ~918.6 MB</td></tr>
+                <tr><td><code>tx_delays</code></td><td><code>(5, 134)</code></td><td class="number">float32</td></tr>
+                <tr><td><code>tx_delays_elev</code></td><td><code>(5, 8)</code></td><td class="number">float32</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>Both backends used the same deliberately coarse validation grid:</p>
+
+          <pre><code>--acq-start 0
+--num-acqs 1
+--elev-planes 1
+--z-coarseness 2.0
+--x-coarseness 2.0
+--no-large-fov</code></pre>
+
+          <p>
+            MLX ran locally on Apple Silicon. MACH ran on a Modal A10G instance. The output files were <code>mlx_acq0_real.h5</code> and <code>mach_acq0_real.h5</code>.
+          </p>
+        </section>
+
+        <section id="comparison">
+          <h2>Comparison</h2>
+          <p>Both outputs had the same compound image shape:</p>
+
+          <pre><code>compound_image shape: (700, 1, 56, 47)</code></pre>
+
+          <p>The saved grid arrays matched exactly:</p>
+
+          <pre><code>grid x max_abs: 0.0
+grid y max_abs: 0.0
+grid z max_abs: 0.0</code></pre>
+
+          <p>The compound image comparison was:</p>
+
+          <pre><code>max_abs: 8.93097
+mean_abs: 1.29289
+relative_l2: 4.5689e-05
+magnitude_corr: 1</code></pre>
+
+          <p>
+            That is the result I cared about. The absolute differences are nonzero, as expected across different GPU backends and floating-point execution paths, but the relative error is small and the magnitude correlation is <code>1</code> at the printed precision.
+          </p>
+
+          <p>Local tests also pass:</p>
+
+          <pre><code>.venv/bin/python -m pytest -q
+2 passed</code></pre>
+        </section>
+
+        <section id="limits">
+          <h2>What This Does Not Prove</h2>
+          <p>
+            This is not a full production-grid validation. The real-acquisition comparison used:
+          </p>
+
+          <pre><code>elev_planes = 1
+z_coarseness = 2.0
+x_coarseness = 2.0
+large_fov = false</code></pre>
+
+          <p>
+            The next checks should cover denser grids, more elevation planes, more acquisitions, and downstream tracking sensitivity. I also still want longer local MLX runs to characterize memory behavior.
+          </p>
+
+          <p>
+            So the result should be described narrowly. MLX matches MACH on a synthetic reference and on one real ultratrace acquisition under a coarse validation configuration. That is enough to say the backend conversion works. It is not yet enough to say every production configuration has been exhaustively validated.
+          </p>
+
+          <p>
+            The useful practical outcome is that beamforming now has a MacBook path. MACH can remain the CUDA reference, and MLX can be used for local Apple Silicon work without changing the neutral ultratrace schema or downstream pipeline.
+          </p>
+        </section>
+
+        <footer class="foot">
+          <p>
+            Built from the Microbubbles MLX/MACH port. Reported comparisons use the same extracted real acquisition and fixed coarse beamforming settings.
+          </p>
+        </footer>
+      </article>
+    </div>
+  </body>
+</html>
