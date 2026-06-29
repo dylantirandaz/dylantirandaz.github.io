@@ -20,6 +20,10 @@
       <article class="article">
         <h1>Validating MLX Beamforming Against MACH/CUDA</h1>
 
+        <p class="repo-link">
+          <a href="https://github.com/dylantirandaz/microbubbles">github repo fork</a>
+        </p>
+
         <p>
           I read a cool blog post about a company building BCIs (<a href="https://alephneuro.com/blog/ultrasound-brain">https://alephneuro.com/blog/ultrasound-brain</a>) so naturally I decided to check out their github and I came across a repo called "Microbubbles"
           The <code>microbubbles</code> beamforming path was CUDA-only in practice. The dependency
@@ -67,11 +71,60 @@ acquisitions/&lt;id&gt;/meta/grid/{x,y,z}</code></pre>
           <pre><code>ultratrace-ulm beamform --backend mlx ...
 ultratrace-ulm beamform --backend mach ...</code></pre>
 
+          <p>The backend dispatch stays small:</p>
+
+          <pre><code>def beamform_iq(
+    iq_frames: np.ndarray,
+    tx_delays: np.ndarray,
+    tx_delays_elev: np.ndarray,
+    config: NeutralConfig,
+    *,
+    backend: str = "mach",
+    scan_chunk: int = 2048,
+    receive_chunk: int = 128,
+    frame_chunk: int = 16,
+) -> tuple[np.ndarray, Grid]:
+    resolved = resolve_beamform_backend(backend)
+    if resolved == "mach":
+        return beamform_iq_mach(iq_frames, tx_delays, tx_delays_elev, config)
+    return beamform_iq_mlx(
+        iq_frames,
+        tx_delays,
+        tx_delays_elev,
+        config,
+        scan_chunk=scan_chunk,
+        receive_chunk=receive_chunk,
+        frame_chunk=frame_chunk,
+    )</code></pre>
+
           <p>
             The main risk was not wiring. The risk was a quiet numerical mismatch: one
             backend looking plausible while drifting from the CUDA reference. So I treated
             the port as a reference-comparison problem.
           </p>
+
+          <p>The MLX loop is still the same delay calculation, interpolation, apodization, phase correction, and receive sum:</p>
+
+          <pre><code>delta = rx[None, :, :] - scan[:, None, :]
+horizontal_sq = delta[:, :, 0] * delta[:, :, 0] + delta[:, :, 1] * delta[:, :, 1]
+inside = horizontal_sq &lt;= aperture_radius_squared[:, None]
+rx_distance = mx.sqrt(horizontal_sq + delta[:, :, 2] * delta[:, :, 2])
+physical_tau = scan_tx[:, None] + rx_distance * inv_c
+sample_idx = (physical_tau - float(rx_start_s)) * float(sampling_freq_hz)
+valid = inside &amp; (sample_idx &gt;= 0.0) &amp; (sample_idx &lt;= float(n_samples - 1))
+
+samples = _linear_interpolate_mlx(ch, sample_idx, valid, mx)
+if tukey_alpha &gt; 0.0:
+    horizontal = mx.sqrt(mx.maximum(horizontal_sq, 0.0))
+    r_norm = horizontal / aperture_radius[:, None]
+    samples = samples * _tukey_apodization_mlx(r_norm, tukey_alpha, mx)[:, :, None]
+
+if modulation_freq_hz:
+    phase = mx.exp((1j * modulation_freq_rad) * physical_tau)
+    samples = samples * phase[:, :, None]
+
+accum = accum + mx.sum(samples, axis=1)
+mx.eval(accum)</code></pre>
         </section>
 
         <section>

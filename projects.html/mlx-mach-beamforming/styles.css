@@ -85,7 +85,7 @@ h2 {
 
 h1 {
   max-width: 900px;
-  margin-bottom: 34px;
+  margin-bottom: 20px;
   font-size: clamp(42px, 8vw, 78px);
   line-height: 0.98;
 }
@@ -99,6 +99,28 @@ h2 {
 
 p {
   margin: 18px 0;
+}
+
+.repo-link {
+  margin: 0 0 34px;
+}
+
+.repo-link a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 15px;
+  color: var(--accent);
+  background: rgba(0, 113, 227, 0.08);
+  border: 1px solid rgba(0, 113, 227, 0.16);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.repo-link a:hover {
+  background: rgba(0, 113, 227, 0.12);
+  text-decoration: none;
 }
 
 section {
