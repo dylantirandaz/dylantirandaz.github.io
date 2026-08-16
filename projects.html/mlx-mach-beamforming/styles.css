@@ -168,6 +168,15 @@ pre code {
   font-size: inherit;
 }
 
+.foot {
+  margin-top: 66px;
+  padding-top: 16px;
+  color: var(--muted);
+  border-top: 1px solid var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
 @media (max-width: 640px) {
   body {
     font-size: 17px;
