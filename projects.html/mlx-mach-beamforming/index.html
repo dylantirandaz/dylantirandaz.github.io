@@ -25,7 +25,7 @@
         </p>
 
         <p>
-          I read a cool blog post about a company building BCIs (<a href="https://alephneuro.com/blog/ultrasound-brain">https://alephneuro.com/blog/ultrasound-brain</a>) so naturally I decided to check out their github and I came across a repo called "Microbubbles"
+          I read a cool blog post about a company building BCIs (<a href="https://alephneuro.com/blog/ultrasound-brain">https://alephneuro.com/blog/ultrasound-brain</a>) so I decided to check out their github and I came across a repo called "Microbubbles"
           The <code>microbubbles</code> beamforming path was CUDA-only in practice. The dependency
           that mattered was MACH, a CUDA/CuPy beamforming kernel. The data format,
           preprocessing, grid construction, and downstream ULM pipeline were not
@@ -35,7 +35,7 @@
 
         <p>
           I added an MLX backend for Apple Silicon and kept the rest of the path fixed.
-          The goal was not to make a new beamformer with different assumptions. The goal
+          The goal
           was a backend swap: same neutral ultratrace input, same grid math, same
           transmit-delay handling, and the same output H5 layout:
         </p>
@@ -92,7 +92,7 @@ ultratrace-ulm beamform --backend mach ...</code></pre>
     )</code></pre>
 
           <p>
-            The main risk was not wiring. The risk was a quiet numerical mismatch: one
+            The main risk was one
             backend looking plausible while drifting from the CUDA reference. So I treated
             the port as a reference-comparison problem.
           </p>
@@ -145,7 +145,7 @@ magnitude_corr: 1</code></pre>
           <h2>Real Acquisition</h2>
 
           <p>
-            The public sample ultratrace H5 is about 98 GB. I did not want to move the full
+            The public sample ultratrace H5 is about 98 GB. I didnt want to move the full
             file just to check one backend. I added an HTTP range reader and extracted only
             acquisition 0 into a one-acquisition neutral H5.
           </p>
