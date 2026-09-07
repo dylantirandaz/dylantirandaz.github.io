@@ -46,13 +46,13 @@
         </nav>
 
         <p class="lede">
-          I wanted this to be a diffusion language model in the literal sense I cared about: not a chatbot wrapped in diffusion language, and not a next-token model with a different sampler. I treat generation as iterative denoising over a fixed token canvas. A prompt is held fixed, the continuation span is initialized as noise, and a bidirectional masked language model repeatedly predicts cleaner token states for the whole span.
+          I treat generation as iterative denoising over a fixed token canvas. A prompt is held fixed, the continuation span is initialized as noise, and a bidirectional masked language model repeatedly predicts cleaner token states for the whole span.
         </p>
         <p>
           The active checkpoint is <code>outputs/roberta-large-infinite-jest-mdlm-subs-selfcond-step500-preserved</code>. The base architecture is RoBERTa-large. I posttrained it on <code>data/infinite_jest.txt</code>. The style is not added with a prompt, a hand-written template, or a postprocessing pass. It comes from the training distribution: the denoising targets are book tokens from Infinite Jest. Whatever DFW-like behavior shows up in the samples comes from pushing the masked denoiser toward that corpus.
         </p>
         <p>
-          The resulting model should be described narrowly: a RoBERTa-style masked denoiser posttrained into a small text diffusion model over one literary corpus. It is not a from-scratch foundation model.
+          The resulting model can be be described as: a RoBERTa-style masked denoiser posttrained into a small text diffusion model over one literary corpus. It is NOT(!) a from-scratch foundation model.
         </p>
 
         <section id="formulation">
@@ -240,7 +240,7 @@ unselected token -> original token</code></pre>
             The strongest implementation details in this run were mixed corruption, high-noise continuation training, uniform re-noising, entropy-based token retention, and self-conditioning.
           </p>
           <p>
-            The result is not broad fluency. The model can produce short locally coherent continuations that have some of the Infinite Jest distribution in them, but it still repeats, loses syntax, and collapses into malformed fragments. The useful property is structural: generation is represented as refinement of a noisy canvas rather than as next-token prediction.
+            The result isnt broad fluency. The model can produce short locally coherent continuations that have some of the Infinite Jest distribution in them, but it still repeats, loses syntax, and collapses into malformed fragments. The useful property is structural: generation is represented as refinement of a noisy canvas rather than as next-token prediction.
           </p>
         </section>
 
