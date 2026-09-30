@@ -51,8 +51,10 @@ replicated that and added elevation: four yes/no questions per point (above 3000
 &minus;1000m, below &minus;4000m), combined into elevation bands and 3D globes.</p>
 
 <h2>Method</h2>
-<p>The recipe below turns a pile of one-word answers into a rough 3D portrait of how a model pictures the
-planet. (&ldquo;Rough&rdquo; is doing a lot of work in that sentence.)</p>
+<p>The pipeline has four steps, run separately for each model: sample cell centers on a 4&deg; grid, ask
+five independent binary questions per cell (land/water, plus four elevation thresholds), read each
+answer out as a probability, and assemble the five resulting probability fields into 2D maps, a banded
+elevation map, and 3D renders.</p>
 <h3>Grid</h3>
 <p>To start, we lay a 4&deg; grid over the planet and use the middle of each cell: 90 columns by 45 rows,
 or 4,050 cells. An 8&deg; test run came first, with 990 cells; since 8 doesn't divide 180 evenly, that
