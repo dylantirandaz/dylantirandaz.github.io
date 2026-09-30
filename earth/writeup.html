@@ -51,12 +51,18 @@ replicated that and added elevation: four yes/no questions per point (above 3000
 &minus;1000m, below &minus;4000m), combined into elevation bands and 3D globes.</p>
 
 <h2>Method</h2>
+<p>The recipe below turns a pile of one-word answers into a rough 3D portrait of how a model pictures the
+planet. (&ldquo;Rough&rdquo; is doing a lot of work in that sentence.)</p>
 <h3>Grid</h3>
-<p>Points are cell centers on a 4&deg; lat/lon grid (90&times;45 = 4,050 cells). An earlier 8&deg; test
-run used 990 cells and stops at 82&deg;N, since 180 isn't divisible by 8. Each cell is a separate API
-call. The model never sees a map, nearby cells, or its earlier answers, so every answer comes from
-memory. Query order is shuffled each run (seed 3).</p>
+<p>To start, we lay a 4&deg; grid over the planet and use the middle of each cell: 90 columns by 45 rows,
+or 4,050 cells. An 8&deg; test run came first, with 990 cells; since 8 doesn't divide 180 evenly, that
+one tops out at 82&deg;N. <i>Halving the cell size means four times the calls, and four times the
+bill.</i></p>
+<p>Every cell gets its own API call with nothing else in the context: no map, no neighboring cells, none
+of the model's earlier answers. Whatever it says has to come out of memory. The cells go out in a
+shuffled order each run (seed 3).</p>
 <h3>Prompts</h3>
+<p>With a coordinate in hand, the model gets one of these two prompts, word for word:</p>
 <pre>Land/water:
 Location: 45.0&deg; N, 90.0&deg; W
 If this location is over land, say 'Land'. If this location is over water, say 'Water'. Reply with only the word.
@@ -64,28 +70,36 @@ If this location is over land, say 'Land'. If this location is over water, say '
 Threshold T (example T=+1000):
 Location: 45.0&deg; N, 90.0&deg; W
 If this location is above 1000 meters elevation, say 'Yes'. Otherwise say 'No'. Reply with only the word.</pre>
-<p>These are the exact prompts. Negative thresholds say &ldquo;below N meters elevation (i.e. deeper
-ocean than Nm)&rdquo; instead. Coordinates must come first: with the instruction first, the Ollama chat
-template makes Qwen2.5 answer Land 96.5% of the time (accuracy 0.371); with coordinates first, the
-oceans come back with confident answers. Raw completions without the template behave like
-coordinates-first, so the problem seems to be the template combined with prompt order, not the wording.</p>
+<p>The deep-water questions swap in &ldquo;below N meters elevation (i.e. deeper ocean than Nm)&rdquo;.
+Both questions are fuzzy at the edges (is a coastline cell land or water?), and I leave the fuzz in: how
+a model settles it says something about that model.</p>
+<p>Henry found that the wording barely matters. The order, it turns out, matters a great deal. Put the
+instruction before the coordinates, and Ollama's chat template flattens Qwen2.5 into a 96.5%-land planet
+(accuracy 0.371). Put the coordinates first, and the oceans come back, confidently. Raw completions with
+no template act like the coordinates-first version, so the trouble seems to come from the template
+meeting that order, not from the words themselves.</p>
 <h3>Readout</h3>
-<p>Temperature is 0 everywhere. Local models: top 15 first-token logprobs, softmaxed over the two answer
-words, matching prefixes when a word splits into several tokens. Frontier APIs don't return logprobs, so
-their answers are a plain 0 or 1 from the text; answers I can't parse count as missing, not guessed.
-Frontier reasoning is at each model's lowest level (Astra: minimal, ~12 thinking tokens; Opus: minimal,
-~95; Fable: low, ~0), since more reasoning cost several times as much without changing answers on test
-cells.</p>
+<p>Turning answers into numbers works differently for the two kinds of model. For the local ones, I read
+the top 15 logprobs of the first answer token and softmax over the two answer words, so each cell gets a
+probability between 0 and 1. When a word is split across tokens, its first piece stands in for it.
+Everything runs at temperature 0.</p>
+<p><i>The frontier APIs don't hand out logprobs, so there, each answer is parsed straight from the text as
+a 0 or a 1. Answers that won't parse are left blank rather than guessed.</i></p>
+<p>Frontier models also like to deliberate, and deliberation is billed by the token. On my test cells,
+extra reasoning multiplied the cost and changed no answers, so each one runs at its lowest setting
+(Astra: minimal, ~12 thinking tokens; Opus: minimal, ~95; Fable: low, ~0).</p>
+<p>Lay the probabilities back onto the grid, and each question becomes an equirectangular map.</p>
 <h3>Models</h3>
-<p>Local, via Ollama at 4-bit: Qwen2.5-7B-Instruct, Qwen3-8B, Llama3.1-8B, Gemma2-9B. Frontier, via
-OpenRouter: GPT-6-Astra, Claude-Fable-5.1, Claude-Opus-5.5. Qwen3-8B failed: its OpenAI-compatible
-endpoint gave no usable logprobs in my setup (its thinking block got in the way), and its native API
-gave a noisy, mostly-land map. I keep it as a negative result, shown only where its output was readable
-(Gallery).</p>
+<p>On the local side, Ollama runs Qwen2.5-7B-Instruct, Qwen3-8B, Llama3.1-8B, and Gemma2-9B at 4-bit. On
+the frontier side, OpenRouter serves GPT-6-Astra, Claude-Fable-5.1, and Claude-Opus-5.5. Qwen3-8B was a
+bust: its OpenAI-compatible endpoint returned no usable logprobs in my setup (its thinking block got in
+the way), and its native API produced a noisy, mostly-land map. It stays in as a negative result, shown
+only where its output could be read (Gallery).</p>
 <h3>Scoring</h3>
-<p>The real map is Natural Earth's 110m land outlines on the same grid. Land share on the 4&deg; grid:
-0.332 by cell, ~0.29 by area. I report accuracy (land if P&gt;0.5) and AUC. For elevation, I rely on
-band counts, landmark checks (<a href="#mechanism">Mechanism</a>), and agreement between models.</p>
+<p>Henry chose not to grade his maps. I grade the land/water ones against Natural Earth's 110m land
+outlines, snapped to the same grid, where 0.332 of cells are land (~0.29 by area). The scores are
+accuracy (land if P&gt;0.5) and AUC. For elevation, the case rests on band counts, landmark checks
+(<a href="#mechanism">Mechanism</a>), and agreement between models.</p>
 
 <h2>Replication</h2>
 <table>
