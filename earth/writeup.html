@@ -32,8 +32,8 @@
 <div class="nav"><a href="./">&larr; globe</a></div>
 <h1>Emergent topography: what language models think Earth looks like, in 3D</h1>
 <p class="epi">Written with Opus 5.5</p>
-<p class="epi">Epistemic status: rough draft. Land/water is checked against a real map; elevation isn't
-(I didn't fetch elevation data). One seed, one query order, no error bars.</p>
+<p class="epi">Epistemic status: rough draft. Land/water is checked against Natural Earth and elevation
+against ETOPO1. One seed, one query order, no error bars.</p>
 
 <h2>Background</h2>
 <p>I read <a href="https://outsidetext.substack.com/p/how-does-a-blind-model-see-the-earth">Henry's
@@ -164,7 +164,8 @@ Fig. 1 &mdash; Real map (Natural Earth 110m, 4&deg;).</figcaption></figure>
 
 <h2>Elevation</h2>
 <table>
-<tr><th>Model</th><th>&gt;3000m (~0.015)</th><th>&gt;1000m (~0.09)</th><th>&lt;&minus;1000m (~0.63)</th><th>&lt;&minus;4000m (~0.48)</th></tr>
+<tr><th>Mean P(yes)</th><th>&gt;3000m</th><th>&gt;1000m</th><th>&lt;&minus;1000m</th><th>&lt;&minus;4000m</th></tr>
+<tr><td>Real (ETOPO1)</td><td>0.035</td><td>0.132</td><td>0.560</td><td>0.303</td></tr>
 <tr><td>Astra</td><td>0.037</td><td>0.133</td><td>0.578</td><td>0.417</td></tr>
 <tr><td>Fable</td><td>0.060</td><td>0.198</td><td>0.773</td><td>0.411</td></tr>
 <tr><td>Opus</td><td>0.029</td><td>0.120</td><td>0.567</td><td>0.305</td></tr>
@@ -172,13 +173,23 @@ Fig. 1 &mdash; Real map (Natural Earth 110m, 4&deg;).</figcaption></figure>
 <tr><td>Llama</td><td>0.292</td><td>0.408</td><td>0.858</td><td>0.810</td></tr>
 <tr><td>Gemma</td><td>0.039</td><td>0.059</td><td>0.998</td><td>0.999</td></tr>
 </table>
+<table>
+<tr><th>vs ETOPO1</th><th>AUC &gt;3000m</th><th>AUC &gt;1000m</th><th>AUC &lt;&minus;1000m</th><th>AUC &lt;&minus;4000m</th><th>Bands exact</th><th>Bands &plusmn;1</th></tr>
+<tr><td>Astra</td><td>0.990</td><td>0.992</td><td>0.979</td><td>0.918</td><td>0.812</td><td>0.998</td></tr>
+<tr><td>Fable</td><td>0.985</td><td>0.979</td><td>0.985</td><td>0.943</td><td>0.450</td><td>0.866</td></tr>
+<tr><td>Opus</td><td>0.966</td><td>0.994</td><td>0.992</td><td>0.975</td><td>0.793</td><td>0.988</td></tr>
+<tr><td>Qwen2.5</td><td>0.776</td><td>0.683</td><td>0.533</td><td>0.541</td><td>0.192</td><td>0.578</td></tr>
+<tr><td>Llama</td><td>0.837</td><td>0.723</td><td>0.615</td><td>0.597</td><td>0.303</td><td>0.560</td></tr>
+<tr><td>Gemma</td><td>0.862</td><td>0.746</td><td>0.636</td><td>0.606</td><td>0.295</td><td>0.546</td></tr>
+</table>
+<figure><img loading="lazy" src="figs/real-hypso.png" alt="real elevation bands"><figcaption>Fig. 6 &mdash; Real elevation bands (ETOPO1 ice surface, at cell centers).</figcaption></figure>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Fig. 6 &mdash; Astra elevation bands. Andes, snowy Tibet, deep Pacific.</figcaption></figure>
-<figure><img loading="lazy" src="figs/fable-hypso.png"><figcaption>Fig. 7 &mdash; Fable elevation bands. Noisier oceans.</figcaption></figure>
-<figure><img loading="lazy" src="figs/opus-hypso.png"><figcaption>Fig. 8 &mdash; Opus elevation bands. Sharpest coasts.</figcaption></figure>
-<figure><img loading="lazy" src="figs/qwen25-hypso.png"><figcaption>Fig. 9 &mdash; Qwen2.5 elevation bands. Flat: only shelf and lowland.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Fig. 7 &mdash; Astra elevation bands. Andes, snowy Tibet, deep Pacific.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-hypso.png"><figcaption>Fig. 8 &mdash; Fable elevation bands. Noisier oceans.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-hypso.png"><figcaption>Fig. 9 &mdash; Opus elevation bands. Sharpest coasts.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-hypso.png"><figcaption>Fig. 10 &mdash; Qwen2.5 elevation bands. Flat: only shelf and lowland.</figcaption></figure>
 </div>
-<figure><img loading="lazy" src="figs/astra-globea.png"><figcaption>Fig. 10 &mdash; Astra relief globe, Atlantic view. Blocky mountains, plateau, and trenches.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-globea.png"><figcaption>Fig. 11 &mdash; Astra relief globe, Atlantic view. Blocky mountains, plateau, and trenches.</figcaption></figure>
 
 <h2 id="mechanism">Mechanism</h2>
 <p>Small models know the facts but fail all six landmark tests given as coordinates, including Everest,
@@ -195,11 +206,19 @@ refusing or inventing is separate from knowing.</p>
 
 <h2>Limitations</h2>
 <ol>
+<li>The maps record what each model answers about each coordinate. They don't read the model's internal
+activations, so they show that the knowledge is stored, not how it is stored.</li>
 <li>The 110m map misses small islands and exact coastlines, so some model &ldquo;errors&rdquo; are map
 errors.</li>
 <li>The lat/lon grid over-counts the poles, equally for every model.</li>
-<li>Frontier answers are only 0 or 1, so they lose the confidence that logprobs keep.</li>
-<li>A 4&deg; cell can hold both peaks and valleys. The landmark tests help but don't fully fix this.</li>
+<li>Frontier answers are a single 0 or 1, given after brief reasoning (about 95 thinking tokens for
+Opus). They lose the confidence that logprobs keep, and they show what a model can work out, not what it
+believes in one pass.</li>
+<li>No model gives a height. The elevation bands and 3D relief come from my rule for combining four
+yes/no answers, and an unanswered cell counts as &ldquo;no&rdquo; (a missing land answer becomes
+ocean).</li>
+<li>Elevation is checked at each cell's center point, but a 4&deg; cell can hold both peaks and valleys,
+so one point may not stand for the whole cell.</li>
 <li>Fable's scores skip cells where it explained instead of answering, which skews them.</li>
 </ol>
 
