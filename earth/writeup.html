@@ -56,12 +56,11 @@ replicated that and added elevation: four yes/no questions per point (above 3000
 as well as four elevation thresholds. Each of these answers gets read out as a probability and then we
 assemble the five resulting probability fields into 2D maps, a banded elevation map, and 3D renders.</p>
 <h3>Grid</h3>
-<p>To start, we lay a 4&deg; grid over the planet and use the middle of each cell: 90 columns by 45 rows,
-or 4,050 cells. An 8&deg; test run came first, with 990 cells; since 8 doesn't divide 180 evenly, that
-one tops out at 82&deg;N. <i>Halving the cell size means four times the calls, and four times the
-bill.</i></p>
-<p>Every cell gets its own API call with nothing else in the context: no map, no neighboring cells, none
-of the model's earlier answers. Whatever it says has to come out of memory. The cells go out in a
+<p>I started by laying a 4&deg; grid over the planet and used the middle of each cell: around 4,050
+cells. I tried an 8&deg; grid first, but since 8 doesn't divide 180 evenly, that one topped out at
+82&deg;N. (Halving the cell size means four times the calls&hellip; and four times the bill 🙁.)</p>
+<p>Every cell got its own API call, with nothing else in the context. No maps, no neighboring cells, none
+of the model's earlier answers. Whatever it says has to come out of memory. The cells also go out in a
 shuffled order each run (seed 3).</p>
 <h3>Prompts</h3>
 <p>With a coordinate in hand, the model gets one of these two prompts, word for word:</p>
