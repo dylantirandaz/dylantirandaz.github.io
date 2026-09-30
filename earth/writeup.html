@@ -99,6 +99,25 @@ the frontier side, OpenRouter serves GPT-6-Astra, Claude-Fable-5.1, and Claude-O
 bust: its OpenAI-compatible endpoint returned no usable logprobs in my setup (its thinking block got in
 the way), and its native API produced a noisy, mostly-land map. It stays in as a negative result, shown
 only where its output could be read (Gallery).</p>
+<h3>Isolation</h3>
+<p>No model had web access or tools, so every answer comes from what the model already knows. Evidence
+from the code and the run data:</p>
+<ul>
+<li><b>Frontier models (OpenRouter):</b> The request body (<code>backends.py:66-73</code>) has only the
+model, <code>temperature: 0</code>, <code>max_tokens</code>, one user message with the prompt text, and a
+reasoning effort. It has no tools, no plugins, and no image. On OpenRouter, web search is opt-in: you
+must add the <code>web</code> plugin or put <code>:online</code> after the model name
+(<a href="https://openrouter.ai/docs/guides/features/plugins/web-search">docs</a>). The run scripts use
+plain names such as <code>openai/gpt-6-astra</code>, <code>anthropic/claude-fable-5.1</code> and
+<code>anthropic/claude-opus-5.5</code>, with no <code>:online</code>.</li>
+<li><b>Local models (Ollama):</b> These ran on my machine, with one user message and no tools
+(<code>topo_run.py:77-84</code>). The logprob path asks for exactly 1 token.</li>
+<li><b>Stored answers:</b> I checked all 37 runs. None of the stored answers has a URL, a citation
+marker, or a phrase like &ldquo;according to&rdquo; (the logs keep the first 300 characters of each
+answer). Web search on OpenRouter adds URL citations to the answer, and there are none.</li>
+<li><b>Every call is fresh:</b> Each call has no system prompt, no earlier turns, no map, and no image.
+The backend can send images, but the topo runs never do.</li>
+</ul>
 
 <h2>Replication</h2>
 <table>
