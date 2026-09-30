@@ -18,11 +18,13 @@
   code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
   pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 12px;
     overflow-x: auto; white-space: pre-wrap; }
+  blockquote { margin: 12px 0; padding: 0 14px; border-left: 3px solid #30363d; color: #c8d4e0; }
   figure { margin: 14px 0; }
   figure img { width: 100%; border-radius: 8px; border: 1px solid #21262d; }
   figcaption { font-size: 12.5px; color: #8b949e; margin-top: 4px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
   .nav { font-size: 13px; margin-bottom: 18px; }
 </style>
 </head>
@@ -33,11 +35,20 @@
 (I didn't fetch elevation data). One seed, one query order, no error bars.</p>
 
 <h2>Background</h2>
-<p><a href="https://outsidetext.substack.com/p/how-does-a-blind-model-see-the-earth">Henry (2025)</a>
-asked different models &ldquo;Land or Water?&rdquo; one lat/lon point at a time, took first-token
-logprobs, and turned them into maps. Small models said land everywhere; real geography appeared as
-models grew. I replicated that and added elevation: four yes/no questions per point (above 3000m, above
-1000m, below &minus;1000m, below &minus;4000m), combined into elevation bands and 3D globes.</p>
+<p>I read <a href="https://outsidetext.substack.com/p/how-does-a-blind-model-see-the-earth">Henry's
+post</a> and I found it very interesting. I wondered if this could be extended beyond a 2D map and how
+models internally represented the globe. Here's what he did, in his words:</p>
+<blockquote>
+<p>First, we sample latitude and longitude pairs evenly from across the globe. [&hellip;] Then, for each
+coordinate, we ask an instruct-tuned model some variation of:</p>
+<pre>If this location is over land, say 'Land'. If this location is over water, say 'Water'. Do not say anything else. x&deg; S, y&deg; W</pre>
+<p>[&hellip;] Next, we simply find within the model's output the logprobs for "Land" and "Water", and
+softmax the two, giving probabilities that sums to 1. [&hellip;] From there, we can put all the
+probabilities together into an image, and view our map.</p>
+</blockquote>
+<p>He found that small models said land everywhere, and real geography appeared as models grew. I
+replicated that and added elevation: four yes/no questions per point (above 3000m, above 1000m, below
+&minus;1000m, below &minus;4000m), combined into elevation bands and 3D globes.</p>
 
 <h2>Method</h2>
 <h3>Grid</h3>
@@ -153,44 +164,108 @@ errors.</li>
 days in the background, mostly waiting on APIs.</p>
 
 <h2>Gallery</h2>
-<p class="epi">Maps not shown above.</p>
+<p class="epi">Every map for each model. In the 3D plots, x is longitude, y is latitude, and z is the
+probability (for terrain, the elevation band). Gray cells in the 2D maps have no answer; the 3D plots
+fill them with the average.</p>
 <h3>Astra</h3>
+<div class="grid3">
+<figure><img loading="lazy" src="figs/astra-landwater.png"><figcaption>P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tp3000_4.png"><figcaption>P(above 3000m), 98% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tp1000_4.png"><figcaption>P(above 1000m), 97% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tm1000_4.png"><figcaption>P(below &minus;1000m), 98% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tm4000_4.png"><figcaption>P(below &minus;4000m), 93% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Elevation bands.</figcaption></figure>
+</div>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/astra-tp3000_4.png"><figcaption>P(above 3000m).</figcaption></figure>
-<figure><img loading="lazy" src="figs/astra-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-landwater-3d.png"><figcaption>3D: P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tp3000-3d.png"><figcaption>3D: P(above 3000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tp1000-3d.png"><figcaption>3D: P(above 1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tm1000-3d.png"><figcaption>3D: P(below &minus;1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-tm4000-3d.png"><figcaption>3D: P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-terrain.png"><figcaption>3D terrain from the elevation bands.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-globea.png"><figcaption>Relief globe, Atlantic side.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Fable</h3>
+<div class="grid3">
+<figure><img loading="lazy" src="figs/fable-landwater.png"><figcaption>P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tp3000_4.png"><figcaption>P(above 3000m), 66% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tp1000_4.png"><figcaption>P(above 1000m), 56% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tm1000_4.png"><figcaption>P(below &minus;1000m), 39% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tm4000_4.png"><figcaption>P(below &minus;4000m), 21% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-hypso.png"><figcaption>Elevation bands.</figcaption></figure>
+</div>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/fable-tp3000_4.png"><figcaption>P(above 3000m).</figcaption></figure>
-<figure><img loading="lazy" src="figs/fable-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-landwater-3d.png"><figcaption>3D: P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tp3000-3d.png"><figcaption>3D: P(above 3000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tp1000-3d.png"><figcaption>3D: P(above 1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tm1000-3d.png"><figcaption>3D: P(below &minus;1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-tm4000-3d.png"><figcaption>3D: P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-terrain.png"><figcaption>3D terrain from the elevation bands.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-globea.png"><figcaption>Relief globe, Atlantic side.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Opus</h3>
+<div class="grid3">
+<figure><img loading="lazy" src="figs/opus-landwater.png"><figcaption>P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tp3000_4.png"><figcaption>P(above 3000m), 96% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tp1000_4.png"><figcaption>P(above 1000m), 94% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tm1000_4.png"><figcaption>P(below &minus;1000m), 93% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tm4000_4.png"><figcaption>P(below &minus;4000m), 79% answered.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-hypso.png"><figcaption>Elevation bands.</figcaption></figure>
+</div>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/opus-tp3000_4.png"><figcaption>P(above 3000m).</figcaption></figure>
-<figure><img loading="lazy" src="figs/opus-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-landwater-3d.png"><figcaption>3D: P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tp3000-3d.png"><figcaption>3D: P(above 3000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tp1000-3d.png"><figcaption>3D: P(above 1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tm1000-3d.png"><figcaption>3D: P(below &minus;1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-tm4000-3d.png"><figcaption>3D: P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-terrain.png"><figcaption>3D terrain from the elevation bands.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-globea.png"><figcaption>Relief globe, Atlantic side.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Qwen2.5</h3>
-<div class="grid2">
-<figure><img loading="lazy" src="figs/qwen25-landwater-8.png"><figcaption>8&deg; test run. Same blobs as the 4&deg; run (Fig. 5), with rougher coasts.</figcaption></figure>
+<div class="grid3">
+<figure><img loading="lazy" src="figs/qwen25-landwater.png"><figcaption>P(land), 4&deg;.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-landwater-8.png"><figcaption>P(land), 8&deg; test run. Same blobs, rougher coasts.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-landwater-2.png"><figcaption>P(land), 2&deg; run. Stopped at 63% of cells.</figcaption></figure>
 <figure><img loading="lazy" src="figs/qwen25-tp3000_4.png"><figcaption>P(above 3000m). Empty.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-hypso.png"><figcaption>Elevation bands.</figcaption></figure>
+</div>
+<div class="grid2">
+<figure><img loading="lazy" src="figs/qwen25-landwater-3d.png"><figcaption>3D: P(land), 4&deg;.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-landwater-8-3d.png"><figcaption>3D: P(land), 8&deg;.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-landwater-2-3d.png"><figcaption>3D: P(land), 2&deg; (partial).</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-terrain.png"><figcaption>3D terrain from the elevation bands.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-globea.png"><figcaption>Relief globe, Atlantic side.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Gemma</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/gemma-landwater.png"><figcaption>Land/water.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-landwater.png"><figcaption>P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/gemma-tp3000_4.png"><figcaption>P(above 3000m). Speckled.</figcaption></figure>
 <figure><img loading="lazy" src="figs/gemma-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/gemma-hypso.png"><figcaption>Elevation bands. Mostly land, with deep ocean in the wrong places.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-landwater-3d.png"><figcaption>3D: P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-terrain.png"><figcaption>3D terrain from the elevation bands.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-globea.png"><figcaption>Relief globe, Atlantic side.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Llama</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/llama-landwater.png"><figcaption>Land/water.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-landwater.png"><figcaption>P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/llama-tp3000_4.png"><figcaption>P(above 3000m). Featureless.</figcaption></figure>
 <figure><img loading="lazy" src="figs/llama-tm4000_4.png"><figcaption>P(below &minus;4000m). Roughly inverted land.</figcaption></figure>
 <figure><img loading="lazy" src="figs/llama-hypso.png"><figcaption>Elevation bands. Deep ocean everywhere.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-landwater-3d.png"><figcaption>3D: P(land).</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-terrain.png"><figcaption>3D terrain. Flat, with one spike.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-globea.png"><figcaption>Relief globe, Atlantic side.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Qwen3</h3>
 <figure><img loading="lazy" src="figs/qwen3-landwater-8.png"><figcaption>8&deg; test run, native API. Accuracy 0.47. Left out of elevation.</figcaption></figure>
-<p class="epi">Code and run logs are available on request. All 27 figures come straight from model
+<p class="epi">Code and run logs are available on request. All 80 model figures come straight from model
 outputs; I only added colormaps and smoothing for display.</p>
 </body>
 </html>
