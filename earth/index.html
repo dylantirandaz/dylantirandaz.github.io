@@ -60,7 +60,7 @@
 <a href="writeup.html" style="position:fixed;top:12px;right:14px;z-index:6;font-size:12px;color:#8fa3bb;text-decoration:none;border:1px solid #2c3a4d;border-radius:999px;padding:5px 12px;background:rgba(13,20,30,.7);">write-up</a>
 <div id="scene"></div>
 <div id="title"><h1>What does AI think Earth looks like?</h1>
-<p>Drag to spin &middot; Scroll to zoom &middot; Click to inspect &middot; Double-click to center</p></div>
+<p>Drag to spin &middot; Scroll to descend &middot; Click to inspect &middot; Double-click to fly there</p></div>
 <div id="probe" hidden></div>
 <div id="bar"></div>
 <div id="foot">Each globe: one AI asked about 4,050 places, never shown a map.</div>
@@ -102,17 +102,20 @@ renderer.setSize(innerWidth, innerHeight);
 el.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x04060c);
+const SPACE = new THREE.Color(0x04060c), SKY = new THREE.Color(0x10254a);
+scene.background = SPACE.clone();
 const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.005, 200);
 camera.position.set(0, 0.7, 3.1);
 
-scene.add(new THREE.AmbientLight(0x8899bb, 0.85));
-const sun = new THREE.DirectionalLight(0xffffff, 1.6);
-sun.position.set(-4, 2, 3);
+scene.add(new THREE.AmbientLight(0x8899bb, 0.6));
+// The sun rides with the camera, from the upper left of the view: wherever you fly it is day,
+// and slopes catch the light.
+const sun = new THREE.DirectionalLight(0xffffff, 2.0);
+const SUN_FROM = new THREE.Vector3(-1, 0.8, 0.5).normalize();
 scene.add(sun);
 
 // stars
-{
+const stars = (() => {
   const n = 1600, pos = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
     const r = 30 + Math.random() * 40, t = Math.random() * Math.PI * 2, p = Math.acos(2 * Math.random() - 1);
@@ -120,14 +123,37 @@ scene.add(sun);
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x8899bb, size: 0.09, sizeAttenuation: true })));
-}
+  return new THREE.Points(g, new THREE.PointsMaterial({ color: 0x8899bb, size: 0.09, sizeAttenuation: true, transparent: true }));
+})();
+scene.add(stars);
 
 const globe = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 512, 256),
+  new THREE.SphereGeometry(1, 1024, 512),
   new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 0.0, displacementScale: 0.07 })
 );
 scene.add(globe);
+
+// Thin atmosphere: a glowing rim around the globe that becomes the bright band on the horizon
+// on the way down.
+const atmosphere = new THREE.Mesh(
+  new THREE.SphereGeometry(1, 128, 64),
+  new THREE.ShaderMaterial({
+    vertexShader: `varying vec3 vNormal; varying vec3 vView;
+      void main() {
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        vNormal = normalize(mat3(modelMatrix) * normal);
+        vView = normalize(cameraPosition - world.xyz);
+        gl_Position = projectionMatrix * viewMatrix * world;
+      }`,
+    fragmentShader: `varying vec3 vNormal; varying vec3 vView;
+      void main() {
+        float rim = pow(1.0 - abs(dot(vNormal, vView)), 5.0);
+        gl_FragColor = vec4(vec3(0.35, 0.62, 1.0) * rim * 1.4, 1.0);
+      }`,
+    side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
+  })
+);
+scene.add(atmosphere);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -136,8 +162,11 @@ controls.enablePan = false;
 controls.maxDistance = 9;
 controls.autoRotate = true;
 controls.autoRotateSpeed = 0.7;
-// Closest zoom: about 14° of surface across the view, where the 0.1° real relief still reads.
-function setMinDistance() { controls.minDistance = 1.13 + globe.material.displacementScale; }
+// Lowest pass: just above the atmosphere shell, which sits just above the highest possible relief.
+function setMinDistance() {
+  atmosphere.scale.setScalar(1.03 + globe.material.displacementScale);
+  controls.minDistance = 1.045 + globe.material.displacementScale;
+}
 setMinDistance();
 // Near the surface, a drag or a wheel tick should move a similar share of the view as from far away.
 function scaleSpeeds() {
@@ -153,16 +182,32 @@ controls.addEventListener('end', () => {
   idleTimer = setTimeout(() => { controls.autoRotate = camera.position.length() > 2.2 && !picked; }, 4000);
 });
 
+// Descent: far away the camera looks at the globe. On the way down it pitches up toward the
+// horizon, the sky turns blue and the stars fade, like coming back from orbit.
+let pitch = 0;
+function descend() {
+  const d = camera.position.length(), surface = 1 + globe.material.displacementScale * 0.5;
+  const low = 1 - THREE.MathUtils.smoothstep(d - surface, 0.2, 0.9);
+  const horizon = Math.asin(Math.min(1, surface / d)); // angle from straight down to the horizon
+  pitch = low * Math.max(0, horizon - THREE.MathUtils.degToRad(16));
+  camera.rotateX(pitch);
+  scene.background.lerpColors(SPACE, SKY, low * 0.8);
+  stars.material.opacity = 1 - 0.7 * low;
+  sun.position.copy(SUN_FROM).applyQuaternion(camera.quaternion);
+}
+
 const loader = new THREE.TextureLoader();
 loader.setCrossOrigin('anonymous');
 const cache = {};
 function textures(m) {
   if (!cache[m.id]) {
     const color = m.color || 'tex/' + m.id + '.png', height = m.height || 'tex/' + m.id + '_h.png';
-    cache[m.id] = Promise.all([loader.loadAsync(color), loader.loadAsync(height)]).then(([map, disp]) => {
+    // The real Earth has its hillshade baked into the color; the model globes get a normal map.
+    const normal = m.color ? null : 'tex/' + m.id + '_n.png';
+    cache[m.id] = Promise.all([color, height, normal].map(url => url && loader.loadAsync(url))).then(([map, disp, norm]) => {
       map.colorSpace = THREE.SRGBColorSpace;
       map.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      return { map, disp };
+      return { map, disp, norm };
     });
   }
   return cache[m.id];
@@ -180,6 +225,7 @@ function show(id) {
     if (current !== id) return; // a later pick won
     globe.material.map = t.map;
     globe.material.displacementMap = t.disp;
+    globe.material.normalMap = t.norm;
     globe.material.needsUpdate = true;
     renderPanel();
   }, () => { tag.textContent = 'failed'; });
@@ -199,8 +245,10 @@ const rw = document.createElement('label');
 rw.id = 'relief';
 rw.innerHTML = '⛰️ <input id="ex" type="range" min="0" max="0.3" step="0.005" value="0.07">';
 bar.appendChild(rw);
+const BAKED_RELIEF = 0.07; // relief the model normal maps were baked for (gen_site.py DISPLACEMENT)
 document.getElementById('ex').oninput = e => {
   globe.material.displacementScale = +e.target.value;
+  globe.material.normalScale.setScalar(globe.material.displacementScale / BAKED_RELIEF);
   setMinDistance();
   placeMarker();
 };
@@ -310,13 +358,18 @@ renderer.domElement.addEventListener('pointerup', e => {
 });
 addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
 
-// double-click: swing the camera over that point at the same altitude, so zooming goes there
+// double-click: fly there at the same altitude, so the point ends up in the middle of the view
 let flight = null;
 renderer.domElement.addEventListener('dblclick', e => {
   const hit = surfacePoint(e.clientX, e.clientY);
   if (!hit) return;
-  const from = camera.position.clone();
-  flight = { from, to: hit.normalize().multiplyScalar(from.length()), t: 0 };
+  const { lat, lon } = toLatLon(hit);
+  const from = camera.position.clone(), d = from.length();
+  // Pitched up, the middle of the view looks `ahead` north of the point straight below,
+  // so the camera goes that far south of the target.
+  const surface = 1 + globe.material.displacementScale * 0.5;
+  const ahead = Math.asin(Math.min(1, d * Math.sin(pitch) / surface)) - pitch;
+  flight = { from, to: toVector(Math.max(-89, lat - THREE.MathUtils.radToDeg(ahead)), lon, d), t: 0 };
   controls.autoRotate = false;
 });
 function fly() {
@@ -338,6 +391,7 @@ addEventListener('resize', () => {
   requestAnimationFrame(loop);
   fly();
   controls.update();
+  descend();
   marker.scale.setScalar(0.005 * Math.max(0.12, camera.position.length() - 1));
   renderer.render(scene, camera);
 })();
