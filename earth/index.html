@@ -60,7 +60,7 @@
 <a href="writeup.html" style="position:fixed;top:12px;right:14px;z-index:6;font-size:12px;color:#8fa3bb;text-decoration:none;border:1px solid #2c3a4d;border-radius:999px;padding:5px 12px;background:rgba(13,20,30,.7);">write-up</a>
 <div id="scene"></div>
 <div id="title"><h1>What does AI think Earth looks like?</h1>
-<p>Drag to spin &middot; Scroll to zoom &middot; Click to inspect</p></div>
+<p>Drag to spin &middot; Scroll to zoom &middot; Click to inspect &middot; Double-click to center</p></div>
 <div id="probe" hidden></div>
 <div id="bar"></div>
 <div id="foot">Each globe: one AI asked about 4,050 places, never shown a map.</div>
@@ -243,11 +243,14 @@ function placeMarker() {
 }
 
 const raycaster = new THREE.Raycaster();
-function inspect(x, y) {
+// Aim at the middle of the relief so tilted views land close to the visible surface.
+function surfacePoint(x, y) {
   raycaster.setFromCamera(new THREE.Vector2(x / innerWidth * 2 - 1, -(y / innerHeight) * 2 + 1), camera);
-  // Aim at the middle of the relief so tilted views land close to the visible surface.
   const sphere = new THREE.Sphere(new THREE.Vector3(), 1 + globe.material.displacementScale * 0.5);
-  const hit = raycaster.ray.intersectSphere(sphere, new THREE.Vector3());
+  return raycaster.ray.intersectSphere(sphere, new THREE.Vector3());
+}
+function inspect(x, y) {
+  const hit = surfacePoint(x, y);
   if (!hit) { closePanel(); return; }
   const { lat, lon } = toLatLon(hit);
   picked = { lat, lon,
@@ -307,6 +310,24 @@ renderer.domElement.addEventListener('pointerup', e => {
 });
 addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
 
+// double-click: swing the camera over that point at the same altitude, so zooming goes there
+let flight = null;
+renderer.domElement.addEventListener('dblclick', e => {
+  const hit = surfacePoint(e.clientX, e.clientY);
+  if (!hit) return;
+  const from = camera.position.clone();
+  flight = { from, to: hit.normalize().multiplyScalar(from.length()), t: 0 };
+  controls.autoRotate = false;
+});
+function fly() {
+  if (!flight) return;
+  flight.t = Math.min(1, flight.t + 1 / 45);
+  const s = flight.t * flight.t * (3 - 2 * flight.t);
+  const r = flight.from.length();
+  camera.position.lerpVectors(flight.from, flight.to, s).setLength(r);
+  if (flight.t === 1) flight = null;
+}
+
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
@@ -315,6 +336,7 @@ addEventListener('resize', () => {
 
 (function loop() {
   requestAnimationFrame(loop);
+  fly();
   controls.update();
   marker.scale.setScalar(0.005 * Math.max(0.12, camera.position.length() - 1));
   renderer.render(scene, camera);
