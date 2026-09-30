@@ -23,8 +23,7 @@
   figure img { width: 100%; border-radius: 8px; border: 1px solid #21262d; }
   figcaption { font-size: 12.5px; color: #8b949e; margin-top: 4px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  @media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
   .nav { font-size: 13px; margin-bottom: 18px; }
 </style>
 </head>
@@ -229,7 +228,7 @@ days in the background, mostly waiting on APIs.</p>
 probability (for terrain, the elevation band). Gray cells in the 2D maps have no answer; the 3D plots
 fill them with the average.</p>
 <h3>Astra</h3>
-<div class="grid3">
+<div class="grid2">
 <figure><img loading="lazy" src="figs/astra-landwater.png"><figcaption>P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/astra-tp3000_4.png"><figcaption>P(above 3000m), 98% answered.</figcaption></figure>
 <figure><img loading="lazy" src="figs/astra-tp1000_4.png"><figcaption>P(above 1000m), 97% answered.</figcaption></figure>
@@ -248,7 +247,7 @@ fill them with the average.</p>
 <figure><img loading="lazy" src="figs/astra-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Fable</h3>
-<div class="grid3">
+<div class="grid2">
 <figure><img loading="lazy" src="figs/fable-landwater.png"><figcaption>P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/fable-tp3000_4.png"><figcaption>P(above 3000m), 66% answered.</figcaption></figure>
 <figure><img loading="lazy" src="figs/fable-tp1000_4.png"><figcaption>P(above 1000m), 56% answered.</figcaption></figure>
@@ -267,7 +266,7 @@ fill them with the average.</p>
 <figure><img loading="lazy" src="figs/fable-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Opus</h3>
-<div class="grid3">
+<div class="grid2">
 <figure><img loading="lazy" src="figs/opus-landwater.png"><figcaption>P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/opus-tp3000_4.png"><figcaption>P(above 3000m), 96% answered.</figcaption></figure>
 <figure><img loading="lazy" src="figs/opus-tp1000_4.png"><figcaption>P(above 1000m), 94% answered.</figcaption></figure>
@@ -286,11 +285,13 @@ fill them with the average.</p>
 <figure><img loading="lazy" src="figs/opus-globeb.png"><figcaption>Relief globe, Pacific side.</figcaption></figure>
 </div>
 <h3>Qwen2.5</h3>
-<div class="grid3">
+<div class="grid2">
 <figure><img loading="lazy" src="figs/qwen25-landwater.png"><figcaption>P(land), 4&deg;.</figcaption></figure>
 <figure><img loading="lazy" src="figs/qwen25-landwater-8.png"><figcaption>P(land), 8&deg; test run. Same blobs, rougher coasts.</figcaption></figure>
 <figure><img loading="lazy" src="figs/qwen25-landwater-2.png"><figcaption>P(land), 2&deg; run. Stopped at 63% of cells.</figcaption></figure>
 <figure><img loading="lazy" src="figs/qwen25-tp3000_4.png"><figcaption>P(above 3000m). Empty.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-tp1000_4.png"><figcaption>P(above 1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-tm1000_4.png"><figcaption>P(below &minus;1000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/qwen25-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/qwen25-hypso.png"><figcaption>Elevation bands.</figcaption></figure>
 </div>
@@ -306,6 +307,8 @@ fill them with the average.</p>
 <div class="grid2">
 <figure><img loading="lazy" src="figs/gemma-landwater.png"><figcaption>P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/gemma-tp3000_4.png"><figcaption>P(above 3000m). Speckled.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-tp1000_4.png"><figcaption>P(above 1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-tm1000_4.png"><figcaption>P(below &minus;1000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/gemma-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/gemma-hypso.png"><figcaption>Elevation bands. Mostly land, with deep ocean in the wrong places.</figcaption></figure>
 <figure><img loading="lazy" src="figs/gemma-landwater-3d.png"><figcaption>3D: P(land).</figcaption></figure>
@@ -317,6 +320,8 @@ fill them with the average.</p>
 <div class="grid2">
 <figure><img loading="lazy" src="figs/llama-landwater.png"><figcaption>P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/llama-tp3000_4.png"><figcaption>P(above 3000m). Featureless.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-tp1000_4.png"><figcaption>P(above 1000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-tm1000_4.png"><figcaption>P(below &minus;1000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/llama-tm4000_4.png"><figcaption>P(below &minus;4000m). Roughly inverted land.</figcaption></figure>
 <figure><img loading="lazy" src="figs/llama-hypso.png"><figcaption>Elevation bands. Deep ocean everywhere.</figcaption></figure>
 <figure><img loading="lazy" src="figs/llama-landwater-3d.png"><figcaption>3D: P(land).</figcaption></figure>
@@ -326,7 +331,7 @@ fill them with the average.</p>
 </div>
 <h3>Qwen3</h3>
 <figure><img loading="lazy" src="figs/qwen3-landwater-8.png"><figcaption>8&deg; test run, native API. Accuracy 0.47. Left out of elevation.</figcaption></figure>
-<p class="epi">Code and run logs are available on request. All 80 model figures come straight from model
+<p class="epi">Code and run logs are available on request. All 86 model figures come straight from model
 outputs; I only added colormaps and smoothing for display.</p>
 </body>
 </html>
