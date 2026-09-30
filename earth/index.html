@@ -184,12 +184,24 @@ controls.addEventListener('end', () => {
 
 // Descent: far away the camera looks at the globe. On the way down it pitches up toward the
 // horizon, the sky turns blue and the stars fade, like coming back from orbit.
-let pitch = 0;
+let pitch = 0, ahead = 0, lastDistance = camera.position.length();
+// How far north of the point straight below the middle of the view lands, as an angle at the core.
+function aheadOf(d, p, surface) { return Math.asin(Math.min(1, d * Math.sin(p) / surface)) - p; }
 function descend() {
   const d = camera.position.length(), surface = 1 + globe.material.displacementScale * 0.5;
   const low = 1 - THREE.MathUtils.smoothstep(d - surface, 0.2, 0.9);
   const horizon = Math.asin(Math.min(1, surface / d)); // angle from straight down to the horizon
   pitch = low * Math.max(0, horizon - THREE.MathUtils.degToRad(16));
+  const nextAhead = aheadOf(d, pitch, surface);
+  if (!flight && Math.abs(d - lastDistance) > 1e-7) {
+    // Scrolling changes the pitch; slide the camera by the same amount so the spot in the middle
+    // of the view stays put and you descend onto it.
+    const { lat, lon } = toLatLon(camera.position);
+    camera.position.copy(toVector(THREE.MathUtils.clamp(lat - THREE.MathUtils.radToDeg(nextAhead - ahead), -89, 89), lon, d));
+    camera.lookAt(0, 0, 0);
+  }
+  ahead = nextAhead;
+  lastDistance = d;
   camera.rotateX(pitch);
   scene.background.lerpColors(SPACE, SKY, low * 0.8);
   stars.material.opacity = 1 - 0.7 * low;
@@ -272,20 +284,25 @@ function toVector(lat, lon, r) {
                            r * Math.sin(phi) * Math.sin(theta));
 }
 
-const marker = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshBasicMaterial({ color: 0xff5a5a }));
-const outline = new THREE.LineLoop(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xffd166 }));
+// Marker and cell outline sit at mid-relief height, the same sphere clicks are aimed at, so the
+// marker lands exactly under the pointer; they draw on top so terrain never hides them.
+const marker = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12),
+  new THREE.MeshBasicMaterial({ color: 0xff5a5a, depthTest: false }));
+const outline = new THREE.LineLoop(new THREE.BufferGeometry(),
+  new THREE.LineBasicMaterial({ color: 0xffd166, depthTest: false }));
+marker.renderOrder = outline.renderOrder = 1;
 marker.visible = outline.visible = false;
 scene.add(marker, outline);
 
 function placeMarker() {
   if (!picked) return;
-  const top = 1 + globe.material.displacementScale + 0.002;
-  marker.position.copy(toVector(picked.lat, picked.lon, top));
+  const r = 1 + globe.material.displacementScale * 0.5;
+  marker.position.copy(toVector(picked.lat, picked.lon, r));
   const south = -90 + picked.j * CELL, west = -180 + picked.i * CELL, pts = [];
-  for (let k = 0; k < 8; k++) pts.push(toVector(south, west + CELL * k / 8, top));
-  for (let k = 0; k < 8; k++) pts.push(toVector(south + CELL * k / 8, west + CELL, top));
-  for (let k = 0; k < 8; k++) pts.push(toVector(south + CELL, west + CELL * (1 - k / 8), top));
-  for (let k = 0; k < 8; k++) pts.push(toVector(south + CELL * (1 - k / 8), west, top));
+  for (let k = 0; k < 8; k++) pts.push(toVector(south, west + CELL * k / 8, r));
+  for (let k = 0; k < 8; k++) pts.push(toVector(south + CELL * k / 8, west + CELL, r));
+  for (let k = 0; k < 8; k++) pts.push(toVector(south + CELL, west + CELL * (1 - k / 8), r));
+  for (let k = 0; k < 8; k++) pts.push(toVector(south + CELL * (1 - k / 8), west, r));
   outline.geometry.setFromPoints(pts);
   marker.visible = outline.visible = true;
 }
@@ -365,11 +382,10 @@ renderer.domElement.addEventListener('dblclick', e => {
   if (!hit) return;
   const { lat, lon } = toLatLon(hit);
   const from = camera.position.clone(), d = from.length();
-  // Pitched up, the middle of the view looks `ahead` north of the point straight below,
+  // Pitched up, the middle of the view looks north of the point straight below,
   // so the camera goes that far south of the target.
-  const surface = 1 + globe.material.displacementScale * 0.5;
-  const ahead = Math.asin(Math.min(1, d * Math.sin(pitch) / surface)) - pitch;
-  flight = { from, to: toVector(Math.max(-89, lat - THREE.MathUtils.radToDeg(ahead)), lon, d), t: 0 };
+  const southBy = aheadOf(d, pitch, 1 + globe.material.displacementScale * 0.5);
+  flight = { from, to: toVector(Math.max(-89, lat - THREE.MathUtils.radToDeg(southBy)), lon, d), t: 0 };
   controls.autoRotate = false;
 });
 function fly() {
@@ -393,6 +409,9 @@ addEventListener('resize', () => {
   controls.update();
   descend();
   marker.scale.setScalar(0.005 * Math.max(0.12, camera.position.length() - 1));
+  // drawn on top of everything, so hide them once the picked spot turns away behind the planet
+  marker.visible = outline.visible = !!picked &&
+    camera.position.clone().sub(marker.position).dot(marker.position) > 0;
   renderer.render(scene, camera);
 })();
 
