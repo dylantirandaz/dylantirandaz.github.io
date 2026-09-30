@@ -12,7 +12,8 @@
   h3 { font-size: 15px; margin: 22px 0 6px; color: #c8d4e0; }
   a { color: #58a6ff; text-decoration: none; }
   .epi { color: #8b949e; font-size: 13px; }
-  table { border-collapse: collapse; font-size: 13px; margin: 10px 0; width: 100%; }
+  table { border-collapse: collapse; font-size: 13px; width: 100%; }
+  .table-wrap { margin: 10px 0; overflow-x: auto; }
   td, th { border-bottom: 1px solid #21262d; padding: 5px 8px; text-align: right; font-variant-numeric: tabular-nums; }
   td:first-child, th:first-child { text-align: left; }
   code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
@@ -136,7 +137,7 @@ The backend can send images, but the topo runs never do.</li>
 </ul>
 
 <h2>Replication</h2>
-<table>
+<div class="table-wrap"><table>
 <tr><th>Model</th><th>Accuracy</th><th>AUC</th><th>Predicted land</th><th>Valid</th></tr>
 <tr><td>Opus</td><td>0.992</td><td>0.991</td><td>0.335</td><td>0.93</td></tr>
 <tr><td>Astra</td><td>0.984</td><td>0.971</td><td>0.328</td><td>0.98</td></tr>
@@ -144,7 +145,7 @@ The backend can send images, but the topo runs never do.</li>
 <tr><td>Qwen2.5</td><td>0.726</td><td>0.638</td><td>0.171</td><td>1.00</td></tr>
 <tr><td>Gemma</td><td>0.491</td><td>0.696</td><td>0.798</td><td>1.00</td></tr>
 <tr><td>Llama</td><td>0.668</td><td>0.532</td><td>0.000</td><td>1.00</td></tr>
-</table>
+</table></div>
 <p>Frontier models are nearly perfect. Qwen2.5 is unsure and calls too little land, but ranks cells in
 the right order. Gemma ranks best of the small models but calls far too much land. Llama never goes
 above 0.5, so its accuracy equals the water share and its ranking is near chance. On hard cells, Fable
@@ -160,7 +161,7 @@ Fig. 1 &mdash; Real map (Natural Earth 110m, 4&deg;).</figcaption></figure>
 </div>
 
 <h2>Elevation</h2>
-<table>
+<div class="table-wrap"><table>
 <tr><th>Mean P(yes)</th><th>&gt;3000m</th><th>&gt;1000m</th><th>&lt;&minus;1000m</th><th>&lt;&minus;4000m</th></tr>
 <tr><td>Real (ETOPO1)</td><td>0.035</td><td>0.132</td><td>0.560</td><td>0.303</td></tr>
 <tr><td>Astra</td><td>0.037</td><td>0.133</td><td>0.578</td><td>0.417</td></tr>
@@ -169,8 +170,8 @@ Fig. 1 &mdash; Real map (Natural Earth 110m, 4&deg;).</figcaption></figure>
 <tr><td>Qwen2.5</td><td>0.000</td><td>0.000</td><td>0.231</td><td>0.109</td></tr>
 <tr><td>Llama</td><td>0.292</td><td>0.408</td><td>0.858</td><td>0.810</td></tr>
 <tr><td>Gemma</td><td>0.039</td><td>0.059</td><td>0.998</td><td>0.999</td></tr>
-</table>
-<table>
+</table></div>
+<div class="table-wrap"><table>
 <tr><th>vs ETOPO1</th><th>AUC &gt;3000m</th><th>AUC &gt;1000m</th><th>AUC &lt;&minus;1000m</th><th>AUC &lt;&minus;4000m</th><th>Bands exact</th><th>Bands &plusmn;1</th></tr>
 <tr><td>Astra</td><td>0.990</td><td>0.992</td><td>0.979</td><td>0.918</td><td>0.812</td><td>0.998</td></tr>
 <tr><td>Fable</td><td>0.985</td><td>0.979</td><td>0.985</td><td>0.943</td><td>0.450</td><td>0.866</td></tr>
@@ -178,7 +179,7 @@ Fig. 1 &mdash; Real map (Natural Earth 110m, 4&deg;).</figcaption></figure>
 <tr><td>Qwen2.5</td><td>0.776</td><td>0.683</td><td>0.533</td><td>0.541</td><td>0.192</td><td>0.578</td></tr>
 <tr><td>Llama</td><td>0.837</td><td>0.723</td><td>0.615</td><td>0.597</td><td>0.303</td><td>0.560</td></tr>
 <tr><td>Gemma</td><td>0.862</td><td>0.746</td><td>0.636</td><td>0.606</td><td>0.295</td><td>0.546</td></tr>
-</table>
+</table></div>
 <figure><img loading="lazy" src="figs/real-hypso.png" alt="real elevation bands"><figcaption>Fig. 6 &mdash; Real elevation bands (ETOPO1 ice surface, at cell centers).</figcaption></figure>
 <div class="grid2">
 <figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Fig. 7 &mdash; Astra elevation bands. Andes, snowy Tibet, deep Pacific.</figcaption></figure>
@@ -202,12 +203,12 @@ the Altiplano, and the Mariana Trench. They only place a coordinate to within ro
 for continents, too coarse for elevation. Astra and Opus pass all six; Fable passes four (one
 explanation, one blank). Llama refuses where Qwen2.5 makes up an answer, though both know the facts, so
 refusing or inventing is separate from knowing.</p>
-<table>
+<div class="table-wrap"><table>
 <tr><th>Question</th><th>Qwen2.5</th><th>Llama</th><th>Astra</th></tr>
 <tr><td>&ldquo;How high is Mount Everest?&rdquo;</td><td>8848</td><td>8848</td><td>8848.86</td></tr>
 <tr><td>Elevation at (28&deg;N, 87&deg;E)</td><td>150m</td><td>refused</td><td>above 3000m (yes/no)</td></tr>
 <tr><td>Place at (28&deg;N, 87&deg;E)</td><td>Hyderabad</td><td>Mumbai</td><td>Mount Everest</td></tr>
-</table>
+</table></div>
 
 <h2>Limitations</h2>
 <ol>

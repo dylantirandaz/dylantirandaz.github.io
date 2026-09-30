@@ -50,6 +50,13 @@
   #probe tr.cur td { background: rgba(88,166,255,.14); }
   #probe td.ok { color: #7ee2a8; }
   #probe td.bad { color: #ff8a8a; }
+  /* Phones are too narrow for the title between the corner links, and the wrapped button bar hides the footnote. */
+  @media (max-width: 600px) {
+    #title { top: 46px; padding: 0 14px; }
+    #probe { top: 108px; }
+    #bar { padding-bottom: 28px; }
+    #foot { left: 0; right: 0; bottom: 8px; z-index: 6; text-align: center; }
+  }
 </style>
 <script type="importmap">
 { "imports": { "three": "./three.module.js", "three/addons/": "./addons/" } }
@@ -106,6 +113,14 @@ const SPACE = new THREE.Color(0x04060c), SKY = new THREE.Color(0x10254a);
 scene.background = SPACE.clone();
 const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.005, 200);
 camera.position.set(0, 0.7, 3.1);
+// The 42° view spans the shorter side of the screen, so a portrait phone sees the whole globe too.
+function fitCamera() {
+  camera.aspect = innerWidth / innerHeight;
+  const halfShortSide = Math.tan(THREE.MathUtils.degToRad(42 / 2));
+  camera.fov = THREE.MathUtils.radToDeg(2 * Math.atan(halfShortSide / Math.min(1, camera.aspect)));
+  camera.updateProjectionMatrix();
+}
+fitCamera();
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.6));
 // The sun rides with the camera, from the upper left of the view: wherever you fly it is day,
@@ -191,7 +206,8 @@ function descend() {
   const d = camera.position.length(), surface = 1 + globe.material.displacementScale * 0.5;
   const low = 1 - THREE.MathUtils.smoothstep(d - surface, 0.2, 0.9);
   const horizon = Math.asin(Math.min(1, surface / d)); // angle from straight down to the horizon
-  pitch = low * Math.max(0, horizon - THREE.MathUtils.degToRad(16));
+  // Pitch up until the horizon sits 5° below the top edge of the view.
+  pitch = low * Math.max(0, horizon - THREE.MathUtils.degToRad(camera.fov / 2 - 5));
   const nextAhead = aheadOf(d, pitch, surface);
   if (!flight && Math.abs(d - lastDistance) > 1e-7) {
     // Scrolling changes the pitch; slide the camera by the same amount so the spot in the middle
@@ -398,8 +414,7 @@ function fly() {
 }
 
 addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
+  fitCamera();
   renderer.setSize(innerWidth, innerHeight);
 });
 
