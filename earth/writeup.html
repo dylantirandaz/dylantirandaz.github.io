@@ -81,16 +81,17 @@ land planet. If we put the coordinates first, then the oceans come back. Raw com
 template act like the coordinates-first version, so the issue seems to come from the template in that
 specific order rather than the words themselves.</p>
 <h3>Readout</h3>
-<p>Turning answers into numbers works differently for the two kinds of model. For the local ones, I read
-the top 15 logprobs of the first answer token and softmax over the two answer words, so each cell gets a
-probability between 0 and 1. When a word is split across tokens, its first piece stands in for it.
-Everything runs at temperature 0.</p>
-<p><i>The frontier APIs don't hand out logprobs, so there, each answer is parsed straight from the text as
-a 0 or a 1. Answers that won't parse are left blank rather than guessed.</i></p>
-<p>Frontier models also like to deliberate, and deliberation is billed by the token. On my test cells,
-extra reasoning multiplied the cost and changed no answers, so each one runs at its lowest setting
-(Astra: minimal, ~12 thinking tokens; Opus: minimal, ~95; Fable: low, ~0).</p>
-<p>Lay the probabilities back onto the grid, and each question becomes an equirectangular map.</p>
+<p>Turning answers into numbers worked differently for the two kinds of models. For the local ones, I just
+read the top 15 logprobs of the first answer token and then softmax over the two answer words, so each
+cell gets a probability between 0 and 1. If a word is split across tokens, then its first piece would be
+what we take. Everything runs at temperature 0.</p>
+<p>The frontier APIs don't hand out logprobs, so each answer is parsed straight from text as a 0 or a 1.
+Answers that won't parse are left blank rather than guessed. Frontier models also like to deliberate, and
+unfortunately deliberation is billed by the token. During the run on the test cells, extra reasoning just
+increased cost at no change to the answers, so each of those models just got run at their lowest
+settings.</p>
+<p>Finally, we can lay the probabilities back onto the grid, and now each question is an equirectangular
+map.</p>
 <h3>Models</h3>
 <p>On the local side, Ollama runs Qwen2.5-7B-Instruct, Qwen3-8B, Llama3.1-8B, and Gemma2-9B at 4-bit. On
 the frontier side, OpenRouter serves GPT-6-Astra, Claude-Fable-5.1, and Claude-Opus-5.5. Qwen3-8B was a
