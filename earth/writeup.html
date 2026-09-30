@@ -71,14 +71,15 @@ If this location is over land, say 'Land'. If this location is over water, say '
 Threshold T (example T=+1000):
 Location: 45.0&deg; N, 90.0&deg; W
 If this location is above 1000 meters elevation, say 'Yes'. Otherwise say 'No'. Reply with only the word.</pre>
-<p>The deep-water questions swap in &ldquo;below N meters elevation (i.e. deeper ocean than Nm)&rdquo;.
-Both questions are fuzzy at the edges (is a coastline cell land or water?), and I leave the fuzz in: how
-a model settles it says something about that model.</p>
-<p>Henry found that the wording barely matters. The order, it turns out, matters a great deal. Put the
-instruction before the coordinates, and Ollama's chat template flattens Qwen2.5 into a 96.5%-land planet
-(accuracy 0.371). Put the coordinates first, and the oceans come back, confidently. Raw completions with
-no template act like the coordinates-first version, so the trouble seems to come from the template
-meeting that order, not from the words themselves.</p>
+<p>For the deep-water questions we switched in &ldquo;below N meters elevation (i.e. deeper ocean than
+Nm)&rdquo;. For both of the questions the output around the edges (is a coastline cell land or water?)
+is fuzzy, but I leave it in because how a model answers it will still give us some insight about that
+model.</p>
+<p>Henry actually found that the wording barely matters. The order, it turns out, matters a great deal.
+If we put the instruction before the coordinates, Ollama's chat template flattens Qwen2.5 into a 96.5%
+land planet. If we put the coordinates first, then the oceans come back. Raw completions with no
+template act like the coordinates-first version, so the issue seems to come from the template in that
+specific order rather than the words themselves.</p>
 <h3>Readout</h3>
 <p>Turning answers into numbers works differently for the two kinds of model. For the local ones, I read
 the top 15 logprobs of the first answer token and softmax over the two answer words, so each cell gets a
