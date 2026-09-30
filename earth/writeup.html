@@ -31,6 +31,7 @@
 <body>
 <div class="nav"><a href="./">&larr; globe</a></div>
 <h1>Emergent topography: what language models think Earth looks like, in 3D</h1>
+<p class="epi">Written with Opus 5.5</p>
 <p class="epi">Epistemic status: rough draft. Land/water is checked against a real map; elevation isn't
 (I didn't fetch elevation data). One seed, one query order, no error bars.</p>
 
@@ -98,11 +99,6 @@ the frontier side, OpenRouter serves GPT-6-Astra, Claude-Fable-5.1, and Claude-O
 bust: its OpenAI-compatible endpoint returned no usable logprobs in my setup (its thinking block got in
 the way), and its native API produced a noisy, mostly-land map. It stays in as a negative result, shown
 only where its output could be read (Gallery).</p>
-<h3>Scoring</h3>
-<p>Henry chose not to grade his maps. I grade the land/water ones against Natural Earth's 110m land
-outlines, snapped to the same grid, where 0.332 of cells are land (~0.29 by area). The scores are
-accuracy (land if P&gt;0.5) and AUC. For elevation, the case rests on band counts, landmark checks
-(<a href="#mechanism">Mechanism</a>), and agreement between models.</p>
 
 <h2>Replication</h2>
 <table>
@@ -129,8 +125,6 @@ Fig. 1 &mdash; Real map (Natural Earth 110m, 4&deg;).</figcaption></figure>
 </div>
 
 <h2>Elevation</h2>
-<p>Average P(Yes) for each question. Numbers in parentheses are rough real shares (ETOPO-style
-reference values).</p>
 <table>
 <tr><th>Model</th><th>&gt;3000m (~0.015)</th><th>&gt;1000m (~0.09)</th><th>&lt;&minus;1000m (~0.63)</th><th>&lt;&minus;4000m (~0.48)</th></tr>
 <tr><td>Astra</td><td>0.037</td><td>0.133</td><td>0.578</td><td>0.417</td></tr>
@@ -140,10 +134,6 @@ reference values).</p>
 <tr><td>Llama</td><td>0.292</td><td>0.408</td><td>0.858</td><td>0.810</td></tr>
 <tr><td>Gemma</td><td>0.039</td><td>0.059</td><td>0.998</td><td>0.999</td></tr>
 </table>
-<p>Frontier models are within about 2&times; of the real shares. Small models are flat (Qwen2.5: no
-cells above 1000m), yes-biased (Llama), or saturated (Gemma's ocean depths). Six elevation bands combine
-the four answers; depth answers count only for ocean cells, height answers only for land cells. Globe
-heights are for display, not meters.</p>
 <div class="grid2">
 <figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Fig. 6 &mdash; Astra elevation bands. Andes, snowy Tibet, deep Pacific.</figcaption></figure>
 <figure><img loading="lazy" src="figs/fable-hypso.png"><figcaption>Fig. 7 &mdash; Fable elevation bands. Noisier oceans.</figcaption></figure>
@@ -162,7 +152,7 @@ one blank).</p>
 <tr><td>Elevation at (28&deg;N, 87&deg;E)</td><td>150m</td><td>refused</td><td>above 3000m (yes/no)</td></tr>
 <tr><td>Place at (28&deg;N, 87&deg;E)</td><td>Hyderabad</td><td>Mumbai</td><td>Mount Everest</td></tr>
 </table>
-<p>My take: every model can look up facts by name, but 7&ndash;9B models only place a coordinate within
+<p>Every model can look up facts by name, but 7&ndash;9B models only place a coordinate within
 ~1,000 km. That's enough for continents, not elevation. Frontier models place coordinates precisely.
 Llama refuses where Qwen2.5 makes something up, so handling doubt is separate from knowing facts.</p>
 
