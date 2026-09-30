@@ -29,34 +29,23 @@
 <body>
 <div class="nav"><a href="./">&larr; globe</a></div>
 <h1>Emergent topography: what language models think Earth looks like, in 3D</h1>
-<p class="epi">Epistemic status: rough draft. Land/water replications are scored against ground truth
-(n=4050/grid); elevation claims rest on threshold fields plus landmark spot checks, with no gridded
-elevation ground truth. Single seed throughout; no error bars. Frontier runs cost ~$200; local runs $0.</p>
+<p class="epi">Epistemic status: rough draft. Land/water is checked against a real map; elevation isn't
+(I didn't fetch elevation data). One seed, one query order, no error bars.</p>
 
-<h2>0. Summary</h2>
-<p>Per-coordinate binary probes reproduce Henry's blind-map result locally, then extend it along a third
-axis: elevation. At 7&ndash;9B parameters, models recover coarse continents but no relief; at frontier
-scale they recover both, to 99% coastline accuracy with correctly placed cordilleras, plateaus, and
-abyssal plains. A battery of landmark probes indicates the operative variable is coordinate-to-place
-indexing precision, which is coarse (~10<sup>3</sup> km errors) in small models and precise at frontier.
-All claims below are about <i>retrieval under independent local queries</i>; nothing here required the
-model to see a map, neighboring cells, or its own prior answers.</p>
-
-<h2>1. Background</h2>
+<h2>Background</h2>
 <p><a href="https://outsidetext.substack.com/p/how-does-a-blind-model-see-the-earth">Henry (2025)</a>
-queried language models about individual lat/lon coordinates (&ldquo;Land or Water?&rdquo;), took
-first-token logprobs, and assembled the resulting probability field into equirectangular maps. Small
-models produced degenerate priors (&ldquo;all land&rdquo;); geographic structure emerged with scale.
-The present work replicates that procedure on local hardware, then adds elevation: binary
-above/below-threshold probes at +3000m, +1000m, &minus;1000m, and &minus;4000m, assembled into
-hypsometric bands and rendered as relief globes.</p>
+asked different models &ldquo;Land or Water?&rdquo; one lat/lon point at a time, took first-token
+logprobs, and turned them into maps. Small models said land everywhere; real geography appeared as
+models grew. I replicated that and added elevation: four yes/no questions per point (above 3000m, above
+1000m, below &minus;1000m, below &minus;4000m), combined into elevation bands and 3D globes.</p>
 
-<h2>2. Method</h2>
-<h3>2.1 Grid</h3>
-<p>Equirectangular cell centers at 4&deg; (90&times;45 = 4050 cells); pilot at 8&deg; (990 cells; note
-8 &#8740; 180, so coverage stops at 82&deg;N). Each cell is one independent API call with zero shared
-context. Query order is shuffled per run (seed 3).</p>
-<h3>2.2 Prompts (exact)</h3>
+<h2>Method</h2>
+<h3>Grid</h3>
+<p>Points are cell centers on a 4&deg; lat/lon grid (90&times;45 = 4,050 cells). An earlier 8&deg; test
+run used 990 cells and stops at 82&deg;N, since 180 isn't divisible by 8. Each cell is a separate API
+call. The model never sees a map, nearby cells, or its earlier answers, so every answer comes from
+memory. Query order is shuffled each run (seed 3).</p>
+<h3>Prompts</h3>
 <pre>Land/water:
 Location: 45.0&deg; N, 90.0&deg; W
 If this location is over land, say 'Land'. If this location is over water, say 'Water'. Reply with only the word.
@@ -64,58 +53,56 @@ If this location is over land, say 'Land'. If this location is over water, say '
 Threshold T (example T=+1000):
 Location: 45.0&deg; N, 90.0&deg; W
 If this location is above 1000 meters elevation, say 'Yes'. Otherwise say 'No'. Reply with only the word.</pre>
-<p>Negative thresholds substitute &ldquo;below N meters elevation (i.e. deeper ocean than Nm)&rdquo;.
-Coordinates lead the prompt. This ordering is load-bearing: instruction-first ordering combined with
-the Ollama chat template collapses Qwen2.5-7B to 96.5% Land (accuracy 0.371); coordinates-first
-recovers oceans at confident probabilities. Raw (template-free) completions behave like the
-coordinates-first variant, implicating prefix/template interaction rather than the wording itself.</p>
-<h3>2.3 Readout</h3>
-<p>Temperature 0 throughout. Local models: first-token logprobs (top 15), softmaxed over the two
-target labels with prefix fallback for split tokens. Frontier models (no logprob API): hard 0/1 from
-parsed text, with unparseable responses recorded as missing rather than imputed. Frontier reasoning
-was set to each model's measured floor (Astra: minimal, ~12 thinking tokens; Opus: minimal, ~95;
-Fable: low, ~0) after confirming that unconstrained reasoning multiplies cost without changing
-top-1 answers on probe cells.</p>
-<h3>2.4 Models</h3>
-<p>Local (Ollama 4-bit quants): Qwen2.5-7B-Instruct, Qwen3-8B, Llama3.1-8B, Gemma2-9B. Frontier via
-OpenRouter: GPT-6-Astra, Claude-Fable-5.1, Claude-Opus-5.5. Qwen3-8B is reported only where it
-produced parseable output; its OpenAI-compatible endpoint returns no usable logprobs (thinking-block
-interaction), and native-API runs were land-biased mush. It is retained as a documented negative.</p>
-<h3>2.5 Ground truth and metrics</h3>
-<p>Natural Earth 110m land polygons, rasterized to the query grid. Land fraction on the 4&deg; grid:
-0.332 (cell fraction; area-weighted truth is ~0.29 &mdash; equirectangular grids oversample the
-poles, equally for all models). Metrics: accuracy at P&gt;0.5 and rank AUC. No gridded elevation
-ground truth was fetched; elevation claims are supported by band histograms, landmark spot checks
-(&sect;5), and inter-model agreement.</p>
+<p>These are the exact prompts. Negative thresholds say &ldquo;below N meters elevation (i.e. deeper
+ocean than Nm)&rdquo; instead. Coordinates must come first: with the instruction first, the Ollama chat
+template makes Qwen2.5 answer Land 96.5% of the time (accuracy 0.371); with coordinates first, the
+oceans come back with confident answers. Raw completions without the template behave like
+coordinates-first, so the problem seems to be the template combined with prompt order, not the wording.</p>
+<h3>Readout</h3>
+<p>Temperature is 0 everywhere. Local models: top 15 first-token logprobs, softmaxed over the two answer
+words, matching prefixes when a word splits into several tokens. Frontier APIs don't return logprobs, so
+their answers are a plain 0 or 1 from the text; answers I can't parse count as missing, not guessed.
+Frontier reasoning is at each model's lowest level (Astra: minimal, ~12 thinking tokens; Opus: minimal,
+~95; Fable: low, ~0), since more reasoning cost several times as much without changing answers on test
+cells.</p>
+<h3>Models</h3>
+<p>Local, via Ollama at 4-bit: Qwen2.5-7B-Instruct, Qwen3-8B, Llama3.1-8B, Gemma2-9B. Frontier, via
+OpenRouter: GPT-6-Astra, Claude-Fable-5.1, Claude-Opus-5.5. Qwen3-8B failed: its OpenAI-compatible
+endpoint gave no usable logprobs in my setup (its thinking block got in the way), and its native API
+gave a noisy, mostly-land map. I keep it as a negative result, shown only where its output was readable
+(Gallery).</p>
+<h3>Scoring</h3>
+<p>The real map is Natural Earth's 110m land outlines on the same grid. Land share on the 4&deg; grid:
+0.332 by cell, ~0.29 by area. I report accuracy (land if P&gt;0.5) and AUC. For elevation, I rely on
+band counts, landmark checks (<a href="#mechanism">Mechanism</a>), and agreement between models.</p>
 
-<h2>3. Replication: land and water</h2>
+<h2>Replication</h2>
 <table>
-<tr><th>Model</th><th>Acc</th><th>AUC</th><th>Pred. land</th><th>Valid</th></tr>
-<tr><td>Opus-5.5</td><td>0.992</td><td>0.991</td><td>0.335</td><td>0.93</td></tr>
-<tr><td>GPT-6-Astra</td><td>0.984</td><td>0.971</td><td>0.328</td><td>0.98</td></tr>
-<tr><td>Fable-5.1</td><td>0.968</td><td>0.974</td><td>0.362</td><td>0.80</td></tr>
-<tr><td>Qwen2.5-7B</td><td>0.726</td><td>0.638</td><td>0.171</td><td>1.00</td></tr>
-<tr><td>Gemma2-9B</td><td>0.491</td><td>0.696</td><td>0.798</td><td>1.00</td></tr>
-<tr><td>Llama3.1-8B</td><td>0.668</td><td>0.532</td><td>0.000</td><td>1.00</td></tr>
+<tr><th>Model</th><th>Accuracy</th><th>AUC</th><th>Predicted land</th><th>Valid</th></tr>
+<tr><td>Opus</td><td>0.992</td><td>0.991</td><td>0.335</td><td>0.93</td></tr>
+<tr><td>Astra</td><td>0.984</td><td>0.971</td><td>0.328</td><td>0.98</td></tr>
+<tr><td>Fable</td><td>0.968</td><td>0.974</td><td>0.362</td><td>0.80</td></tr>
+<tr><td>Qwen2.5</td><td>0.726</td><td>0.638</td><td>0.171</td><td>1.00</td></tr>
+<tr><td>Gemma</td><td>0.491</td><td>0.696</td><td>0.798</td><td>1.00</td></tr>
+<tr><td>Llama</td><td>0.668</td><td>0.532</td><td>0.000</td><td>1.00</td></tr>
 </table>
-<p>Frontier models solve the task (0.97&ndash;0.99, near-exact calibration). Local models separate:
-Qwen2.5 under-predicts land but orders correctly (proto-continents); Gemma ranks best of the small
-models (AUC 0.70) while miscalibrated toward land; Llama never crosses 0.5 (null accuracy, near-chance
-ranking). Fable's valid fraction (0.80) reflects its tendency to narrate reasoning in-channel on hard
-cells rather than emitting one word; a strict-prompt redo recovered part of the gap. Its narrations,
-where they occur, contain correct place identifications.</p>
-<figure><img loading="lazy" src="figs/truth-land.png" alt="ground truth"><figcaption>
-Fig. 1 &mdash; Ground truth used for scoring (Natural Earth 110m, 4&deg;).</figcaption></figure>
+<p>Frontier models are nearly perfect. Qwen2.5 is unsure and calls too little land, but ranks cells in
+the right order. Gemma ranks best of the small models but calls far too much land. Llama never goes
+above 0.5, so its accuracy equals the water share and its ranking is near chance. On hard cells, Fable
+often explains instead of giving one word, which lowers its valid rate; a stricter prompt fixed some of
+this. Its explanations name the right place.</p>
+<figure><img loading="lazy" src="figs/truth-land.png" alt="real map"><figcaption>
+Fig. 1 &mdash; Real map (Natural Earth 110m, 4&deg;).</figcaption></figure>
 <div class="grid2">
 <figure><img loading="lazy" src="figs/opus-landwater.png"><figcaption>Fig. 2 &mdash; Opus P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/astra-landwater.png"><figcaption>Fig. 3 &mdash; Astra P(land).</figcaption></figure>
 <figure><img loading="lazy" src="figs/fable-landwater.png"><figcaption>Fig. 4 &mdash; Fable P(land).</figcaption></figure>
-<figure><img loading="lazy" src="figs/qwen25-landwater.png"><figcaption>Fig. 5 &mdash; Qwen2.5 P(land). Note proto-continents with flattened probabilities.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-landwater.png"><figcaption>Fig. 5 &mdash; Qwen2.5 P(land). Blobby.</figcaption></figure>
 </div>
 
-<h2>4. Extension: elevation</h2>
-<p>Four binary thresholds per cell. Mean P(Yes) with approximate true surface fractions in
-parentheses (ETOPO-style reference values, rough):</p>
+<h2>Elevation</h2>
+<p>Average P(Yes) for each question. Numbers in parentheses are rough real shares (ETOPO-style
+reference values).</p>
 <table>
 <tr><th>Model</th><th>&gt;3000m (~0.015)</th><th>&gt;1000m (~0.09)</th><th>&lt;&minus;1000m (~0.63)</th><th>&lt;&minus;4000m (~0.48)</th></tr>
 <tr><td>Astra</td><td>0.037</td><td>0.133</td><td>0.578</td><td>0.417</td></tr>
@@ -125,97 +112,85 @@ parentheses (ETOPO-style reference values, rough):</p>
 <tr><td>Llama</td><td>0.292</td><td>0.408</td><td>0.858</td><td>0.810</td></tr>
 <tr><td>Gemma</td><td>0.039</td><td>0.059</td><td>0.998</td><td>0.999</td></tr>
 </table>
-<p>Frontier base rates track reality within a factor of ~2; local models are flat (Qwen2.5: zero cells
-above 1000m), yea-saying (Llama), or saturated (Gemma's bathymetry). Bands are assembled with
-ocean/land masking (bathymetry thresholds apply only to ocean cells and vice versa) into six
-hypsometric classes; heights are schematic relief units, not meters.</p>
+<p>Frontier models are within about 2&times; of the real shares. Small models are flat (Qwen2.5: no
+cells above 1000m), yes-biased (Llama), or saturated (Gemma's ocean depths). Six elevation bands combine
+the four answers; depth answers count only for ocean cells, height answers only for land cells. Globe
+heights are for display, not meters.</p>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Fig. 6 &mdash; Astra hypsometry. Andean cordillera, Tibetan plateau with snow cells, abyssal Pacific.</figcaption></figure>
-<figure><img loading="lazy" src="figs/fable-hypso.png"><figcaption>Fig. 7 &mdash; Fable hypsometry. Same schema; noisier bathymetry.</figcaption></figure>
-<figure><img loading="lazy" src="figs/opus-hypso.png"><figcaption>Fig. 8 &mdash; Opus hypsometry. Crispest land/water boundary of the three.</figcaption></figure>
-<figure><img loading="lazy" src="figs/qwen25-hypso.png"><figcaption>Fig. 9 &mdash; Qwen2.5 hypsometry. Flat: shelf plus lowland, no high cells.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Fig. 6 &mdash; Astra elevation bands. Andes, snowy Tibet, deep Pacific.</figcaption></figure>
+<figure><img loading="lazy" src="figs/fable-hypso.png"><figcaption>Fig. 7 &mdash; Fable elevation bands. Noisier oceans.</figcaption></figure>
+<figure><img loading="lazy" src="figs/opus-hypso.png"><figcaption>Fig. 8 &mdash; Opus elevation bands. Sharpest coasts.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-hypso.png"><figcaption>Fig. 9 &mdash; Qwen2.5 elevation bands. Flat: only shelf and lowland.</figcaption></figure>
 </div>
-<figure><img loading="lazy" src="figs/astra-globea.png"><figcaption>Fig. 10 &mdash; Astra relief globe, Atlantic view. Woolly but unmistakable: cordilleras, plateau, trenches.</figcaption></figure>
+<figure><img loading="lazy" src="figs/astra-globea.png"><figcaption>Fig. 10 &mdash; Astra relief globe, Atlantic view. Blocky mountains, plateau, and trenches.</figcaption></figure>
 
-<h2>5. Mechanism: the spatial index, not the facts</h2>
-<p>Small models possess the relevant textual facts (Qwen2.5 and Llama both answer 8848 to
-&ldquo;How high is Mount Everest?&rdquo;) but fail all six landmark probes at exact coordinates,
-including Everest, the Altiplano, and the Mariana Trench. Frontier models pass 6/6 (Astra, Opus;
-Fable 4/6 with one narration and one empty response).</p>
+<h2 id="mechanism">Mechanism</h2>
+<p>Small models know the facts but fail all six landmark tests given as coordinates, including Everest,
+the Altiplano, and the Mariana Trench. Astra and Opus pass all six; Fable passes four (one explanation,
+one blank).</p>
 <table>
-<tr><th>Probe</th><th>Qwen2.5-7B</th><th>Llama3.1-8B</th><th>Astra-6</th></tr>
-<tr><td>Everest height, by name</td><td>8848</td><td>8848</td><td>8848.86</td></tr>
-<tr><td>Elevation at (28&deg;N, 87&deg;E)</td><td>150m</td><td>refusal</td><td>(binary: Yes &gt;3000m)</td></tr>
+<tr><th>Question</th><th>Qwen2.5</th><th>Llama</th><th>Astra</th></tr>
+<tr><td>&ldquo;How high is Mount Everest?&rdquo;</td><td>8848</td><td>8848</td><td>8848.86</td></tr>
+<tr><td>Elevation at (28&deg;N, 87&deg;E)</td><td>150m</td><td>refused</td><td>above 3000m (yes/no)</td></tr>
 <tr><td>Place at (28&deg;N, 87&deg;E)</td><td>Hyderabad</td><td>Mumbai</td><td>Mount Everest</td></tr>
 </table>
-<p>Interpretation: name&rarr;fact retrieval is intact at all scales tested; coordinate&rarr;place
-indexing resolves ~10<sup>3</sup> km at 7&ndash;9B (adequate for continent blobs, useless for
-relief) and precisely at frontier. Land/water works where the index suffices; relief fails where it
-does not. Llama's refusal vs Qwen2.5's confabulation further dissociates uncertainty handling from
-knowledge possession.</p>
+<p>My take: every model can look up facts by name, but 7&ndash;9B models only place a coordinate within
+~1,000 km. That's enough for continents, not elevation. Frontier models place coordinates precisely.
+Llama refuses where Qwen2.5 makes something up, so handling doubt is separate from knowing facts.</p>
 
-<h2>6. Limitations</h2>
-<p>(1) Ground truth is 110m coastlines; sub-cell islands and exact shorelines are beyond it &mdash;
-some model "errors" are truth errors. (2) Equirectangular grids distort polar areas; all comparisons
-are grid-matched so this biases no model pair. (3) Frontier readouts are hard 0/1 (no logprob API),
-discarding uncertainty that local logprobs preserve. (4) Threshold cells mix peaks and valleys at
-4&deg;; cell-ambiguity is mitigated but not eliminated by exact-landmark probes. (5) Single seed
-and query order; no variance estimates. (6) Fable metrics carry a compliant-subset selection effect
-(narrated cells excluded). (7) Qwen3-8B excluded: its OpenAI-compatible endpoint returns no usable
-logprobs (thinking-block interaction) and native-API runs were land-biased mush.</p>
+<h2>Limitations</h2>
+<ol>
+<li>The 110m map misses small islands and exact coastlines, so some model &ldquo;errors&rdquo; are map
+errors.</li>
+<li>The lat/lon grid over-counts the poles, equally for every model.</li>
+<li>Frontier answers are only 0 or 1, so they lose the confidence that logprobs keep.</li>
+<li>A 4&deg; cell can hold both peaks and valleys. The landmark tests help but don't fully fix this.</li>
+<li>Fable's scores skip cells where it explained instead of answering, which skews them.</li>
+</ol>
 
-<h2>7. Costs and compute</h2>
-<p>Local: ~150k queries, $0 (Apple Silicon, Ollama 4-bit quants). Frontier: ~60k queries, ~$200
-OpenRouter spend across three models. Total wall time dominated by API throughput, roughly two days
-of background compute.</p>
+<h2>Cost</h2>
+<p>Local: ~150k queries on Apple Silicon, free. Frontier: ~60k queries, ~$200 on OpenRouter. About two
+days in the background, mostly waiting on APIs.</p>
 
-<h2>Appendix A. Per-model gallery</h2>
-<h3>Astra-6</h3>
+<h2>Gallery</h2>
+<p class="epi">Maps not shown above.</p>
+<h3>Astra</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/astra-landwater.png"><figcaption>Land/water P(field).</figcaption></figure>
 <figure><img loading="lazy" src="figs/astra-tp3000_4.png"><figcaption>P(above 3000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/astra-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
-<figure><img loading="lazy" src="figs/astra-hypso.png"><figcaption>Assembled hypsometry.</figcaption></figure>
 </div>
-<h3>Fable-5.1</h3>
+<h3>Fable</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/fable-landwater.png"><figcaption>Land/water P(field).</figcaption></figure>
 <figure><img loading="lazy" src="figs/fable-tp3000_4.png"><figcaption>P(above 3000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/fable-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
-<figure><img loading="lazy" src="figs/fable-hypso.png"><figcaption>Assembled hypsometry.</figcaption></figure>
 </div>
-<h3>Opus-5.5</h3>
+<h3>Opus</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/opus-landwater.png"><figcaption>Land/water P(field).</figcaption></figure>
 <figure><img loading="lazy" src="figs/opus-tp3000_4.png"><figcaption>P(above 3000m).</figcaption></figure>
 <figure><img loading="lazy" src="figs/opus-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
-<figure><img loading="lazy" src="figs/opus-hypso.png"><figcaption>Assembled hypsometry.</figcaption></figure>
 </div>
-<h3>Qwen2.5-7B (8&deg; pilot &rarr; 4&deg;)</h3>
+<h3>Qwen2.5</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/qwen25-landwater-8.png"><figcaption>8&deg; pilot. Proto-continents already visible.</figcaption></figure>
-<figure><img loading="lazy" src="figs/qwen25-landwater.png"><figcaption>4&deg;. Sharper coasts, same blobs.</figcaption></figure>
-<figure><img loading="lazy" src="figs/qwen25-tp3000_4.png"><figcaption>P(above 3000m). Empty: no cell clears the bar.</figcaption></figure>
-<figure><img loading="lazy" src="figs/qwen25-hypso.png"><figcaption>Flat hypsometry. Shelf plus lowland only.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-landwater-8.png"><figcaption>8&deg; test run. Same blobs as the 4&deg; run (Fig. 5), with rougher coasts.</figcaption></figure>
+<figure><img loading="lazy" src="figs/qwen25-tp3000_4.png"><figcaption>P(above 3000m). Empty.</figcaption></figure>
 </div>
-<h3>Gemma2-9B</h3>
+<h3>Gemma</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/gemma-landwater.png"><figcaption>Land/water. Best small-model ranking, worst calibration.</figcaption></figure>
-<figure><img loading="lazy" src="figs/gemma-tp3000_4.png"><figcaption>P(above 3000m). Sparse speckle.</figcaption></figure>
-<figure><img loading="lazy" src="figs/gemma-tm4000_4.png"><figcaption>P(below &minus;4000m). Saturated affirmation.</figcaption></figure>
-<figure><img loading="lazy" src="figs/gemma-hypso.png"><figcaption>Land-everywhere with abyss blobs in wrong places.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-landwater.png"><figcaption>Land/water.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-tp3000_4.png"><figcaption>P(above 3000m). Speckled.</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-tm4000_4.png"><figcaption>P(below &minus;4000m).</figcaption></figure>
+<figure><img loading="lazy" src="figs/gemma-hypso.png"><figcaption>Elevation bands. Mostly land, with deep ocean in the wrong places.</figcaption></figure>
 </div>
-<h3>Llama3.1-8B</h3>
+<h3>Llama</h3>
 <div class="grid2">
-<figure><img loading="lazy" src="figs/llama-landwater.png"><figcaption>Land/water. Never crosses 0.5.</figcaption></figure>
-<figure><img loading="lazy" src="figs/llama-tp3000_4.png"><figcaption>P(above 3000m). Yea-saying without structure.</figcaption></figure>
-<figure><img loading="lazy" src="figs/llama-tm4000_4.png"><figcaption>P(below &minus;4000m). Approximately inverted land.</figcaption></figure>
-<figure><img loading="lazy" src="figs/llama-hypso.png"><figcaption>Waterworld abyss. Degenerate.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-landwater.png"><figcaption>Land/water.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-tp3000_4.png"><figcaption>P(above 3000m). Featureless.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-tm4000_4.png"><figcaption>P(below &minus;4000m). Roughly inverted land.</figcaption></figure>
+<figure><img loading="lazy" src="figs/llama-hypso.png"><figcaption>Elevation bands. Deep ocean everywhere.</figcaption></figure>
 </div>
-<h3>Qwen3-8B</h3>
-<figure><img loading="lazy" src="figs/qwen3-landwater-8.png"><figcaption>8&deg; via native API (the OpenAI-compatible endpoint yields no parseable
-logprobs under this harness). Land-biased mush, accuracy 0.47. Excluded from elevation.</figcaption></figure>
-<p class="epi">Method code and run logs: available on request. Total figures above: 29, all generated
-from model outputs with no manual retouching beyond colormaps and smoothing for display.</p>
+<h3>Qwen3</h3>
+<figure><img loading="lazy" src="figs/qwen3-landwater-8.png"><figcaption>8&deg; test run, native API. Accuracy 0.47. Left out of elevation.</figcaption></figure>
+<p class="epi">Code and run logs are available on request. All 27 figures come straight from model
+outputs; I only added colormaps and smoothing for display.</p>
 </body>
 </html>
