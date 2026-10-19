@@ -391,7 +391,7 @@ figcaption::before {
 
 .waffles {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--models, 3), minmax(0, 1fr));
   gap: clamp(1.25rem, 3.5vw, 2.5rem);
 }
 
@@ -415,7 +415,7 @@ figcaption::before {
 .waffle-sum {
   margin-top: 0.5rem;
   color: var(--muted);
-  font-size: 15px;
+  font-size: 14px;
   text-align: center;
 }
 
