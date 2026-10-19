@@ -74,6 +74,10 @@ body.page-contact #bg {
   background: url('the-sublime.jpg') center/cover;
   opacity: 0.06;
 }
+body.page-blog #bg {
+  background: url('/blog/mitosisbench/example-input.webp') center/cover;
+  opacity: 0.05;
+}
 
 /* ── Masthead / Top Nav ── */
 .masthead {
