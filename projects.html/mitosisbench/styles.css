@@ -2,7 +2,7 @@
    Color lives in the figures, in H&E tones. */
 @font-face {
   font-family: "Latin Modern";
-  src: url("/blog/mitosisbench/fonts/LM-regular.woff2") format("woff2");
+  src: url("/projects.html/mitosisbench/fonts/LM-regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -10,7 +10,7 @@
 
 @font-face {
   font-family: "Latin Modern";
-  src: url("/blog/mitosisbench/fonts/LM-italic.woff2") format("woff2");
+  src: url("/projects.html/mitosisbench/fonts/LM-italic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -18,7 +18,7 @@
 
 @font-face {
   font-family: "Latin Modern";
-  src: url("/blog/mitosisbench/fonts/LM-bold.woff2") format("woff2");
+  src: url("/projects.html/mitosisbench/fonts/LM-bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -441,7 +441,7 @@ figcaption::before {
 .thumb {
   width: 30px;
   height: 30px;
-  background-image: url("/blog/mitosisbench/tumor-thumbs.webp");
+  background-image: url("/projects.html/mitosisbench/tumor-thumbs.webp");
   background-size: 700% 100%;
 }
 
