@@ -529,349 +529,54 @@ td.num {
   white-space: nowrap;
 }
 
-/* ── failed attempts: a minimal trace viewer after Prime Intellect's evaluation viewer ── */
-.tv {
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  font-size: 15px;
-  line-height: 1.5;
-  text-align: left;
+/* ── failure gallery: a tab per model, each showing its answer beside the correct one ── */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.4rem;
 }
 
-.tv summary {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  list-style: none;
+/* the radio buttons stay in the tab order for the keyboard; their labels are what shows */
+.gallery input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gallery label {
+  position: relative; /* paints the active underline over the slide's top rule */
+  margin-bottom: -1px;
+  padding: 0.2rem 0 0.45rem;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: 16px;
   cursor: pointer;
 }
 
-.tv summary::-webkit-details-marker {
+.gallery label:hover {
+  color: var(--ink);
+}
+
+.gallery input:checked + label {
+  border-bottom-color: var(--ink);
+  color: var(--ink);
+}
+
+.gallery input:focus-visible + label {
+  outline: 1.5px solid var(--faint);
+  outline-offset: 3px;
+}
+
+.gallery-slide {
   display: none;
-}
-
-/* a small chevron: right when closed, down when open */
-.tv summary::before {
-  content: "";
-  flex: none;
-  width: 0.36em;
-  height: 0.36em;
-  margin: 0 0.1rem;
-  border-right: 1.5px solid var(--faint);
-  border-bottom: 1.5px solid var(--faint);
-  transform: rotate(-45deg);
-  transition: transform 0.15s ease;
-}
-
-.tv details[open] > summary::before {
-  transform: rotate(45deg);
-}
-
-.tv-sample + .tv-sample {
+  order: 1;
+  width: 100%;
+  padding-top: 0.9rem;
   border-top: 1px solid var(--line);
 }
 
-.tv-head {
-  padding: 0.65rem 0;
-}
-
-.tv-name {
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.tv-sub {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--muted);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tv-score {
-  margin-left: auto;
-  color: var(--eosin);
-  font-family: var(--mono);
-  font-size: 13px;
-}
-
-.tv-sample-body {
-  padding: 0.25rem 0 1.5rem;
-}
-
-.tv-panels {
-  margin-bottom: 1.3rem;
-}
-
-.tv-panes {
+.gallery input:checked + label + .gallery-slide {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 13.5rem;
-  gap: 1.75rem;
-  align-items: start;
-}
-
-.tv-conv,
-.tv-overview {
-  min-width: 0;
-}
-
-.tv-bar {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.tv-actions {
-  display: flex;
-  gap: 0.35rem;
-  color: var(--faint);
-  font-size: 13px;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.tv-actions button {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font: inherit;
-  cursor: pointer;
-}
-
-.tv-actions button:hover {
-  color: var(--accent);
-}
-
-.tv-list {
-  max-height: min(44rem, 80vh);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  border-bottom: 1px solid var(--line);
-}
-
-.tv-msg + .tv-msg {
-  border-top: 1px solid var(--line);
-}
-
-.tv-msg > summary {
-  padding: 0.5rem 0;
-}
-
-.tv-role {
-  font-size: 14.5px;
-  font-weight: 700;
-}
-
-.tv-meta {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--faint);
-  font-family: var(--mono);
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* minmax(0, 1fr) keeps long code lines from widening the column; .tv-code scrolls instead */
-.tv-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.3rem;
-  margin: 0 0 0.75rem 0.25rem;
-  padding-left: 0.85rem;
-  border-left: 1px solid var(--line);
-}
-
-.tv-block > summary {
-  padding: 0.12rem 0;
-}
-
-.tv-label {
-  flex: none;
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 12.5px;
-}
-
-.tv-peek {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  color: var(--faint);
-  font-size: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tv-block[open] > summary > .tv-peek {
-  visibility: hidden;
-}
-
-.tv-body {
-  margin: 0.15rem 0 0.45rem 1rem;
-}
-
-.tv-prose {
-  color: var(--soft);
-  font-size: 14.5px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.tv-reasoning .tv-prose {
-  color: var(--muted);
-}
-
-.tv-said {
-  color: var(--ink);
-}
-
-.tv-answer {
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 13px;
-}
-
-.tv-json {
-  color: var(--soft);
-  font-family: var(--mono);
-  font-size: 12.5px;
-}
-
-.tv-brace {
-  color: var(--faint);
-}
-
-.tv-arg {
-  padding-left: 1rem;
-}
-
-.tv-key {
-  color: var(--ink);
-}
-
-.tv-str {
-  color: var(--accent);
-  overflow-wrap: anywhere;
-}
-
-.tv-code {
-  margin: 0.25rem 0 0.25rem 1rem;
-  padding: 0.55rem 0.7rem;
-  overflow-x: auto;
-  border-radius: 3px;
-  background: #f7f5f8;
-  color: var(--soft);
-  font-family: var(--mono);
-  font-size: 12.5px;
-  line-height: 1.45;
-  white-space: pre;
-}
-
-.tv-output .tv-code {
-  margin-left: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.tv-more {
-  margin-top: 0.2rem;
-  color: var(--faint);
-  font-size: 12.5px;
-}
-
-.tv-files {
-  margin-top: 0.2rem;
-  color: var(--muted);
-  font-family: var(--mono);
-  font-size: 12.5px;
-}
-
-.tv-input {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  margin: 0.15rem 0;
-  color: var(--muted);
-  font-family: var(--mono);
-  font-size: 12.5px;
-}
-
-.tv .tv-input img {
-  width: 80px;
-  height: 80px;
-}
-
-.tv-overview {
-  font-family: var(--mono);
-  font-size: 12.5px;
-}
-
-.tv-ov {
-  padding-top: 0.3rem;
-}
-
-.tv-ov h4 {
-  margin: 0.85rem 0 0.15rem;
-  color: var(--muted);
-  font-family: var(--serif);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.tv-kv {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.8rem;
-  padding: 0.05rem 0;
-  color: var(--muted);
-}
-
-.tv-kv span:last-child {
-  color: var(--ink);
-  text-align: right;
-  overflow-wrap: anywhere;
-}
-
-.tv-kv.sub {
-  padding-left: 0.8rem;
-}
-
-.tv-kv.sub2 {
-  padding-left: 1.6rem;
-}
-
-.tv-reward {
-  padding-top: 0.2rem;
-}
-
-.tv-reward span:last-child {
-  color: var(--eosin);
-  font-weight: 700;
-}
-
-@media (max-width: 760px) {
-  .tv-panes {
-    grid-template-columns: 1fr;
-  }
-
-  .tv-overview {
-    order: -1;
-  }
-
-  .tv-sub {
-    display: none;
-  }
 }
 
 /* ── footer ── */
