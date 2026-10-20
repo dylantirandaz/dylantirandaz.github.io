@@ -413,10 +413,17 @@ figcaption::before {
 }
 
 .waffle-sum {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.75em;
   margin-top: 0.5rem;
   color: var(--muted);
   font-size: 14px;
-  text-align: center;
+}
+
+.waffle-sum span {
+  white-space: nowrap;
 }
 
 .tumorbars {
