@@ -522,12 +522,6 @@ td.num {
   white-space: nowrap;
 }
 
-th .sub {
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 400;
-}
-
 .model {
   display: inline-flex;
   align-items: center;
