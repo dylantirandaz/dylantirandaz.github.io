@@ -529,56 +529,6 @@ td.num {
   white-space: nowrap;
 }
 
-/* ── failure gallery: a tab per model, each showing its answer beside the correct one ── */
-.gallery {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 1.4rem;
-}
-
-/* the radio buttons stay in the tab order for the keyboard; their labels are what shows */
-.gallery input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.gallery label {
-  position: relative; /* paints the active underline over the slide's top rule */
-  margin-bottom: -1px;
-  padding: 0.2rem 0 0.45rem;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.gallery label:hover {
-  color: var(--ink);
-}
-
-.gallery input:checked + label {
-  border-bottom-color: var(--ink);
-  color: var(--ink);
-}
-
-.gallery input:focus-visible + label {
-  outline: 1.5px solid var(--faint);
-  outline-offset: 3px;
-}
-
-.gallery-slide {
-  display: none;
-  order: 1;
-  width: 100%;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
-}
-
-.gallery input:checked + label + .gallery-slide {
-  display: grid;
-}
-
 /* ── footer ── */
 .foot {
   max-width: calc(var(--text) + 2 * var(--pad));
