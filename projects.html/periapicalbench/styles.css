@@ -118,10 +118,85 @@ h1 {
   margin: clamp(1.75rem, 4vw, 2.75rem) auto 0;
 }
 
-.art img {
+/* ── art: a wash that blooms in, and lines that draw themselves, when a piece scrolls into view ── */
+.draw {
+  position: relative;
+}
+
+.draw img {
   display: block;
   width: 100%;
   height: auto;
+  opacity: 0;
+  transform: scale(0.94);
+  filter: blur(10px);
+  transition:
+    opacity 1.6s ease,
+    transform 2.4s ease,
+    filter 1.8s ease;
+}
+
+.draw svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.draw path {
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.02;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0ms);
+}
+
+.draw.in img {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  animation: drift 12s ease-in-out 2.6s infinite alternate;
+}
+
+.draw.in path {
+  stroke-dashoffset: 0;
+}
+
+@keyframes drift {
+  to {
+    transform: translateY(-9px) scale(1.02);
+  }
+}
+
+/* a piece hangs in the right margin beside the place in the text where it is anchored */
+.piece-anchor {
+  position: relative;
+  height: 0;
+}
+
+.piece {
+  position: absolute;
+  top: -0.5rem;
+  left: calc(100% + (var(--figure) - var(--text)) / 2 + 2.25rem);
+  width: 230px;
+  transform: rotate(2deg);
+}
+
+.piece-anchor.mid .piece {
+  left: calc(100% + (var(--figure) - var(--text)) / 2 + 4.5rem);
+  width: 200px;
+  transform: rotate(-3deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draw img,
+  .draw path {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    stroke-dashoffset: 0;
+    transition: none;
+    animation: none;
+  }
 }
 
 /* ── article: text column, a slightly wider one for figures ── */
@@ -149,31 +224,6 @@ h1 {
 .flow > .figure,
 .flow > .table-wrap {
   grid-column: figure;
-}
-
-/* the painting continues down both outer margins, behind everything */
-.post::before,
-.post::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  z-index: -1;
-  width: 260px;
-  background: url("/projects.html/periapicalbench/art-margin.webp") repeat-y;
-  background-size: 260px auto;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.post::before {
-  left: calc(50% - var(--figure) / 2 - 330px);
-  background-position: 0 420px;
-  opacity: 0.28;
-}
-
-.post::after {
-  right: calc(50% - var(--figure) / 2 - 330px);
 }
 
 /* ── contents, in the left margin ── */
@@ -389,6 +439,21 @@ figcaption::before {
   font-size: 11.5px;
 }
 
+.figure svg .tick {
+  fill: var(--soft);
+  font-size: 14px;
+}
+
+.figure svg .title {
+  fill: var(--soft);
+  font-size: 14px;
+}
+
+.figure svg .name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .figure svg .grid {
   stroke: var(--line);
   stroke-width: 1;
@@ -467,20 +532,30 @@ td.num {
   color: var(--ink);
 }
 
-/* the margins hold the contents and the painting only when there is room for them */
+/* the margins hold the contents and the art only when there is room for them */
 @media (max-width: 1320px) {
   .toc {
     display: none;
   }
-
-  .post::before {
-    display: none;
-  }
 }
 
-@media (max-width: 1100px) {
-  .post::after {
+/* without a margin, a section's piece sits above its heading and the mid-section ones are left out */
+@media (max-width: 1180px) {
+  .piece-anchor {
+    height: auto;
+  }
+
+  .piece-anchor.mid {
     display: none;
+  }
+
+  .piece,
+  .piece-anchor.mid .piece {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 170px;
+    margin: 2.5rem auto -2rem;
   }
 }
 
