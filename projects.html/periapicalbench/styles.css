@@ -103,7 +103,7 @@ code {
 }
 
 .roll {
-  animation: roll 38s linear infinite;
+  animation: roll 32s linear infinite;
 }
 
 .spray {
@@ -125,7 +125,7 @@ code {
 .rock {
   transform-box: fill-box;
   transform-origin: 50% 20%;
-  animation: rock 7s ease-in-out infinite alternate;
+  animation: rock 5.5s ease-in-out infinite alternate;
 }
 
 .halftone {
@@ -244,13 +244,13 @@ code {
 }
 
 @keyframes float {
-  from { transform: translateY(24px) rotate(-7deg); }
-  to { transform: translateY(-30px) rotate(8deg); }
+  from { transform: translateY(30px) rotate(-10deg); }
+  to { transform: translateY(-38px) rotate(10deg); }
 }
 
 @keyframes rock {
-  from { transform: translateY(2px) rotate(-3.5deg); }
-  to { transform: translateY(-4px) rotate(3.5deg); }
+  from { transform: translateY(3px) rotate(-5.5deg); }
+  to { transform: translateY(-7px) rotate(5.5deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
