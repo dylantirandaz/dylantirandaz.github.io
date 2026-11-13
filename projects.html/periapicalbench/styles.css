@@ -1,19 +1,20 @@
-/* Plain and quiet: system sans on white, generous space, hairlines, one baby-blue accent.
-   One 44rem reading column; figures break out slightly. */
+/* A research-post layout: serif reading column, sans for labels and data, a contents list in the left margin.
+   The painting (watercolor washes, oil-stick scrawl) opens the page and runs down the outer margins. */
 :root {
   color-scheme: light;
   --bg: #ffffff;
-  --ink: #1d1d1f;
-  --soft: #424245;
-  --muted: #86868b;
-  --line: #e8e8ed;
+  --ink: #26262a;
+  --soft: #4a4a50;
+  --muted: #84848c;
+  --line: #e7e7ea;
   --blue: #a9d8f2;
-  --blue-deep: #4ea3d4;
+  --blue-deep: #2f8fc9;
+  --card: #f5f7f9;
   --text: 44rem;
   --figure: 50rem;
   --pad: clamp(1.25rem, 5vw, 2rem);
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Inter", "Segoe UI", Roboto, Arial, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  --serif: "Iowan Old Style", "Iowan Old Style BT", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Inter", "Segoe UI", Roboto, Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
@@ -27,13 +28,12 @@ html {
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--sans);
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1.65;
-  letter-spacing: -0.011em;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.62;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -43,10 +43,10 @@ body {
 }
 
 a {
-  color: var(--ink);
+  color: inherit;
   text-decoration: underline;
   text-decoration-color: var(--blue);
-  text-decoration-thickness: 1.5px;
+  text-decoration-thickness: 2px;
   text-underline-offset: 3px;
   overflow-wrap: anywhere;
 }
@@ -57,8 +57,7 @@ a:hover {
 
 code {
   font-family: var(--mono);
-  font-size: 0.86em;
-  letter-spacing: 0;
+  font-size: 0.8em;
   overflow-wrap: anywhere;
 }
 
@@ -68,19 +67,18 @@ code {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  max-width: calc(var(--figure) + 2 * var(--pad));
-  margin: 0 auto;
   padding: 1.1rem var(--pad);
+  font-family: var(--sans);
   font-size: 14px;
 }
 
 .topbar a {
-  color: var(--muted);
+  color: var(--soft);
   text-decoration: none;
 }
 
 .topbar a:hover {
-  color: var(--ink);
+  color: var(--blue-deep);
 }
 
 .links {
@@ -88,7 +86,51 @@ code {
   gap: clamp(1rem, 2.5vw, 1.75rem);
 }
 
-/* ── breakout grid: text column, a slightly wider one for figures ── */
+/* ── title, then the painting ── */
+.masthead {
+  padding: clamp(2.5rem, 7vh, 4.5rem) var(--pad) 0;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4.6vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.byline {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 1.1rem;
+  color: var(--soft);
+  font-family: var(--sans);
+  font-size: 15px;
+}
+
+.byline span:last-child {
+  color: var(--muted);
+}
+
+.art {
+  max-width: 68rem;
+  margin: clamp(1.75rem, 4vw, 2.75rem) auto 0;
+}
+
+.art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── article: text column, a slightly wider one for figures ── */
+.post {
+  position: relative;
+  counter-reset: figure;
+  padding: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(4rem, 8vw, 6rem);
+}
+
 .flow {
   display: grid;
   grid-template-columns:
@@ -109,54 +151,66 @@ code {
   grid-column: figure;
 }
 
-/* ── title ── */
-.masthead {
-  padding: 14vh 0 clamp(2.5rem, 5vw, 3.5rem);
+/* the painting continues down both outer margins, behind everything */
+.post::before,
+.post::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 260px;
+  background: url("/projects.html/periapicalbench/art-margin.webp") repeat-y;
+  background-size: 260px auto;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
-h1 {
-  margin: 0;
-  font-family: var(--display);
-  font-size: clamp(2.3rem, 6.2vw, 3.5rem);
-  font-weight: 600;
-  line-height: 1.06;
-  letter-spacing: -0.03em;
+.post::before {
+  left: calc(50% - var(--figure) / 2 - 330px);
+  background-position: 0 420px;
+  opacity: 0.28;
 }
 
-.byline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.2rem 1.25rem;
-  margin-top: 1.25rem;
+.post::after {
+  right: calc(50% - var(--figure) / 2 - 330px);
+}
+
+/* ── contents, in the left margin ── */
+.toc {
+  position: sticky;
+  top: 2rem;
+  float: left;
+  display: grid;
+  gap: 0.55rem;
+  width: 11rem;
+  margin-left: max(1.25rem, calc(50% - var(--figure) / 2 - 14.5rem));
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.toc a {
   color: var(--muted);
-  font-size: 15px;
+  text-decoration: none;
 }
 
-.byline a {
-  color: var(--muted);
-}
-
-/* ── article ── */
-.post {
-  counter-reset: figure;
-  padding-bottom: clamp(4rem, 8vw, 6rem);
+.toc a:hover {
+  color: var(--ink);
 }
 
 h2 {
-  margin: 4.5rem 0 1.1rem;
-  font-family: var(--display);
-  font-size: 1.75rem;
+  margin: 3.6rem 0 1rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.022em;
+  line-height: 1.25;
 }
 
 h3 {
-  margin: 2.6rem 0 0.8rem;
+  margin: 2.4rem 0 0.7rem;
   font-size: 1.12rem;
   font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: -0.015em;
+  line-height: 1.35;
 }
 
 p {
@@ -166,11 +220,11 @@ p {
 ol,
 ul {
   margin: 0 0 1.1rem;
-  padding-left: 1.25rem;
+  padding-left: 1.3rem;
 }
 
 li {
-  margin-bottom: 0.55rem;
+  margin-bottom: 0.5rem;
   padding-left: 0.2rem;
 }
 
@@ -178,53 +232,97 @@ li::marker {
   color: var(--muted);
 }
 
-/* ── traces ── */
+/* ── traces: a transcript card ── */
 .trace {
-  margin: 1.9rem 0 2rem;
+  margin: 1.6rem 0 1.8rem;
 }
 
-.trace-head {
-  margin: 0 0 0.5rem;
-  color: var(--muted);
-  font-size: 14px;
+.trace > p {
+  margin: 0 0 0.75rem;
 }
 
-.trace p {
-  margin: 0 0 0.7rem;
-}
-
-blockquote {
-  margin: 0 0 0.8rem;
-  padding: 0.15rem 0 0.15rem 1.15rem;
-  border-left: 2px solid var(--blue);
-  color: var(--soft);
-  font-size: 16px;
+.card {
+  margin: 0 0 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 13px;
   line-height: 1.6;
+  overflow: hidden;
+}
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+  font-family: var(--sans);
+  font-size: 12.5px;
+}
+
+.card-head .tag {
+  padding: 0.05rem 0.45rem;
+  border-radius: 4px;
+  background: var(--blue);
+  color: #16384b;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card-head .who {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.card-head .where {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.card-head .score {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr);
+  gap: 0.9rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.row + .row {
+  border-top: 1px dashed var(--line);
+}
+
+.role {
+  color: var(--blue-deep);
+  font-size: 11.5px;
+  line-height: 1.85;
+}
+
+.said {
+  color: var(--soft);
   overflow-wrap: anywhere;
 }
 
-blockquote p {
-  margin: 0;
-}
-
-blockquote p + p {
-  margin-top: 0.7rem;
-}
-
-blockquote .cmd {
+.said .cmd {
   display: block;
+  font-size: 1em;
   white-space: pre-wrap;
-  font-size: 13.5px;
-  line-height: 1.55;
-}
-
-blockquote .turn {
-  color: var(--muted);
 }
 
 /* ── figures ── */
 .figure {
-  margin: 2.2rem 0 2.8rem;
+  margin: 2rem 0 2.6rem;
 }
 
 .figure img {
@@ -237,17 +335,23 @@ blockquote .turn {
   margin-top: 0.5rem;
 }
 
+.figure .chart {
+  background: #ffffff;
+}
+
 figcaption {
-  margin-top: 0.85rem;
-  color: var(--muted);
-  font-size: 14px;
+  margin-top: 0.8rem;
+  color: var(--soft);
+  font-family: var(--sans);
+  font-size: 13.5px;
   line-height: 1.5;
 }
 
 figcaption::before {
   counter-increment: figure;
-  content: "Figure " counter(figure) ". ";
-  color: var(--soft);
+  content: "Figure " counter(figure) ": ";
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .key {
@@ -273,7 +377,6 @@ figcaption::before {
 .figure svg text {
   fill: var(--ink);
   font-size: 13px;
-  letter-spacing: -0.01em;
 }
 
 .figure svg .muted {
@@ -298,8 +401,10 @@ figcaption::before {
 
 /* ── tables ── */
 .table-wrap {
-  margin: 2rem 0 2.6rem;
+  margin: 1.8rem 0 2.4rem;
   overflow-x: auto;
+  background: #ffffff;
+  font-family: var(--sans);
 }
 
 .table-wrap.narrow {
@@ -310,41 +415,31 @@ figcaption::before {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 15px;
+  font-size: 14.5px;
   font-variant-numeric: tabular-nums;
 }
 
 caption {
   margin-bottom: 0.7rem;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13.5px;
   text-align: left;
 }
 
 th {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--ink);
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 400;
+  padding: 0.7rem 0.75rem;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+  font-weight: 600;
   text-align: left;
   white-space: nowrap;
 }
 
 td {
-  padding: 0.6rem 0.75rem;
+  padding: 0.7rem 0.75rem;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
-}
-
-th:first-child,
-td:first-child {
-  padding-left: 0;
-}
-
-th:last-child,
-td:last-child {
-  padding-right: 0;
 }
 
 th.num,
@@ -359,6 +454,7 @@ td.num {
   padding: 1.5rem var(--pad) 3.5rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
+  font-family: var(--sans);
   font-size: 14px;
 }
 
@@ -371,21 +467,43 @@ td.num {
   color: var(--ink);
 }
 
-@media (max-width: 640px) {
-  body {
-    font-size: 16px;
+/* the margins hold the contents and the painting only when there is room for them */
+@media (max-width: 1320px) {
+  .toc {
+    display: none;
   }
 
-  .masthead {
-    padding-top: 8vh;
+  .post::before {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .post::after {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 17px;
   }
 
   h2 {
-    margin-top: 3.5rem;
-    font-size: 1.5rem;
+    margin-top: 3rem;
   }
 
-  blockquote {
-    font-size: 15px;
+  .card {
+    font-size: 12.5px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+
+  .card-head {
+    flex-wrap: wrap;
+    gap: 0.3rem 0.6rem;
   }
 }
