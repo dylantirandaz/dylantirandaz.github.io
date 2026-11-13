@@ -99,11 +99,11 @@ code {
 }
 
 .stencil {
-  opacity: 0.13;
+  opacity: 0.16;
 }
 
 .roll {
-  animation: roll 48s linear infinite;
+  animation: roll 38s linear infinite;
 }
 
 .spray {
@@ -118,12 +118,19 @@ code {
 
 .jawline,
 .float {
-  opacity: 0.24;
+  opacity: 0.32;
+}
+
+/* each tooth in the arch rocks a little in its socket, out of step with its neighbours */
+.rock {
+  transform-box: fill-box;
+  transform-origin: 50% 20%;
+  animation: rock 7s ease-in-out infinite alternate;
 }
 
 .halftone {
   fill: #2a3948;
-  opacity: 0.24;
+  opacity: 0.28;
 }
 
 .halftone .dark {
@@ -237,8 +244,13 @@ code {
 }
 
 @keyframes float {
-  from { transform: translateY(18px) rotate(-5deg); }
-  to { transform: translateY(-22px) rotate(6deg); }
+  from { transform: translateY(24px) rotate(-7deg); }
+  to { transform: translateY(-30px) rotate(8deg); }
+}
+
+@keyframes rock {
+  from { transform: translateY(2px) rotate(-3.5deg); }
+  to { transform: translateY(-4px) rotate(3.5deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
