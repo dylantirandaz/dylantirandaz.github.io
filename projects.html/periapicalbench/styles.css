@@ -499,6 +499,37 @@ li::marker {
   white-space: pre-wrap;
 }
 
+/* ── the files the model is handed ── */
+.inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 0.85rem;
+}
+
+.inputs .given {
+  margin: 0;
+}
+
+.inputs .wide {
+  grid-column: 1 / -1;
+}
+
+.given pre {
+  margin: 0;
+  padding: 0.8rem 0.9rem;
+  color: var(--soft);
+  font: inherit;
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .inputs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* ── figures ── */
 .figure {
   margin: 2rem 0 2.6rem;
