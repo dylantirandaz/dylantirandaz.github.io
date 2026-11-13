@@ -61,6 +61,213 @@ code {
   overflow-wrap: anywhere;
 }
 
+/* ── backdrop: a faint drawing fixed behind the page, moving slowly the whole time ──
+   A rolled, half-wiped repeat of one tooth; a sprayed line that keeps redrawing itself; an arch of teeth as on the
+   film, with the dentist's box and a guess that wanders towards it; a face in broken planes; small things adrift. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.backdrop .wash {
+  position: absolute;
+  inset: -8%;
+  background: url("/projects.html/periapicalbench/wash.webp") center / cover no-repeat;
+  opacity: 0.2;
+  animation: wash 70s ease-in-out infinite alternate;
+}
+
+.figures {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* hand-drawn boil: every line exists twice, shown in turn */
+.bb,
+.ba {
+  animation: boil 1.4s steps(1) infinite;
+}
+
+.bb {
+  animation-delay: -0.7s;
+}
+
+.stencil {
+  opacity: 0.13;
+}
+
+.roll {
+  animation: roll 48s linear infinite;
+}
+
+.spray {
+  stroke-dasharray: 1 1;
+  animation: spray 90s linear infinite;
+}
+
+.figures > .spray {
+  stroke: #9fb4c6;
+}
+
+.jawline,
+.float {
+  opacity: 0.24;
+}
+
+.face {
+  opacity: 0.27;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sway 24s ease-in-out infinite alternate;
+}
+
+.strand {
+  opacity: 0.8;
+  transform-box: fill-box;
+  transform-origin: top center;
+  animation: strand 9s ease-in-out infinite alternate;
+}
+
+.blush {
+  fill: #f7b9ab;
+  stroke: none;
+  opacity: 0.55;
+  filter: blur(9px);
+}
+
+.iris {
+  fill: var(--blue);
+  stroke: none;
+}
+
+.dark {
+  fill: #2a3948;
+  stroke: none;
+}
+
+.light {
+  fill: #ffffff;
+  stroke: none;
+}
+
+.pupil {
+  animation: look 11s ease-in-out infinite;
+}
+
+.gold {
+  stroke: var(--blue-deep);
+  stroke-width: 2.4;
+  opacity: 0.9;
+}
+
+.guess {
+  stroke: #2a3948;
+  stroke-width: 1.6;
+  stroke-dasharray: 5 4;
+  transform-box: fill-box;
+  animation: guess 17s ease-in-out infinite;
+}
+
+.float {
+  transform-box: fill-box;
+  animation: float var(--t, 30s) ease-in-out infinite alternate;
+}
+
+.star {
+  fill: var(--blue);
+  stroke: none;
+  opacity: 0.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: twinkle var(--t, 7s) ease-in-out infinite alternate;
+}
+
+@keyframes boil {
+  0% { visibility: visible; }
+  50%, 100% { visibility: hidden; }
+}
+
+@keyframes roll {
+  to { transform: translate(44px, 52px); }
+}
+
+@keyframes spray {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  3% { opacity: 1; }
+  78% { stroke-dashoffset: 0; opacity: 1; }
+  92% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes wash {
+  to { transform: translate(2.5%, -2%) scale(1.06); }
+}
+
+@keyframes sway {
+  from { transform: translateY(0) rotate(-1.6deg); }
+  to { transform: translateY(-16px) rotate(1.6deg); }
+}
+
+@keyframes strand {
+  from { transform: rotate(-2.2deg); }
+  to { transform: rotate(2.2deg); }
+}
+
+@keyframes look {
+  0%, 22% { transform: translate(0, 0); }
+  30%, 48% { transform: translate(var(--look), calc(var(--look) * -0.4)); }
+  56%, 74% { transform: translate(calc(var(--look) * -1), calc(var(--look) * 0.5)); }
+  82%, 100% { transform: translate(0, 0); }
+}
+
+/* the guess starts well off the lesion, hunts, and settles with partial overlap */
+@keyframes guess {
+  0% { transform: translate(34px, -26px); opacity: 0; }
+  10% { opacity: 1; }
+  30% { transform: translate(-22px, 16px); }
+  52% { transform: translate(15px, 12px); }
+  70%, 88% { transform: translate(5px, 3px); opacity: 1; }
+  100% { transform: translate(5px, 3px); opacity: 0; }
+}
+
+@keyframes float {
+  from { transform: translateY(18px) rotate(-5deg); }
+  to { transform: translateY(-22px) rotate(6deg); }
+}
+
+@keyframes twinkle {
+  from { transform: scale(0.6) translateY(6px); opacity: 0.15; }
+  to { transform: scale(1.1) translateY(-8px); opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop *,
+  .backdrop .wash {
+    animation: none;
+  }
+
+  .bb {
+    display: none;
+  }
+
+  .spray {
+    stroke-dasharray: none;
+  }
+}
+
+/* the post itself sits on a white sheet whose edges feather into the backdrop */
+.sheet {
+  max-width: calc(var(--figure) + 2 * var(--pad) + 3rem);
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.93);
+  box-shadow: 0 0 46px 34px rgba(255, 255, 255, 0.93);
+}
+
 /* ── top bar ── */
 .topbar-inner {
   display: flex;
@@ -113,92 +320,6 @@ h1 {
   color: var(--muted);
 }
 
-.art {
-  max-width: 68rem;
-  margin: clamp(1.75rem, 4vw, 2.75rem) auto 0;
-}
-
-/* ── art: a wash that blooms in, and lines that draw themselves, when a piece scrolls into view ── */
-.draw {
-  position: relative;
-}
-
-.draw img {
-  display: block;
-  width: 100%;
-  height: auto;
-  opacity: 0;
-  transform: scale(0.94);
-  filter: blur(10px);
-  transition:
-    opacity 1.6s ease,
-    transform 2.4s ease,
-    filter 1.8s ease;
-}
-
-.draw svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.draw path {
-  stroke-dasharray: 1 2;
-  stroke-dashoffset: 1.02;
-  transition: stroke-dashoffset 0.9s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0ms);
-}
-
-.draw.in img {
-  opacity: 1;
-  transform: none;
-  filter: none;
-  animation: drift 12s ease-in-out 2.6s infinite alternate;
-}
-
-.draw.in path {
-  stroke-dashoffset: 0;
-}
-
-@keyframes drift {
-  to {
-    transform: translateY(-9px) scale(1.02);
-  }
-}
-
-/* a piece hangs in the right margin beside the place in the text where it is anchored */
-.piece-anchor {
-  position: relative;
-  height: 0;
-}
-
-.piece {
-  position: absolute;
-  top: -0.5rem;
-  left: calc(100% + (var(--figure) - var(--text)) / 2 + 2.25rem);
-  width: 230px;
-  transform: rotate(2deg);
-}
-
-.piece-anchor.mid .piece {
-  left: calc(100% + (var(--figure) - var(--text)) / 2 + 4.5rem);
-  width: 200px;
-  transform: rotate(-3deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .draw img,
-  .draw path {
-    opacity: 1;
-    transform: none;
-    filter: none;
-    stroke-dashoffset: 0;
-    transition: none;
-    animation: none;
-  }
-}
-
 /* ── article: text column, a slightly wider one for figures ── */
 .post {
   position: relative;
@@ -228,13 +349,12 @@ h1 {
 
 /* ── contents, in the left margin ── */
 .toc {
-  position: sticky;
-  top: 2rem;
-  float: left;
+  position: fixed;
+  top: 7.5rem;
+  left: max(1.25rem, calc(50% - var(--figure) / 2 - 17rem));
   display: grid;
   gap: 0.55rem;
-  width: 11rem;
-  margin-left: max(1.25rem, calc(50% - var(--figure) / 2 - 14.5rem));
+  width: 10.5rem;
   font-family: var(--sans);
   font-size: 13px;
   line-height: 1.35;
@@ -536,26 +656,6 @@ td.num {
 @media (max-width: 1320px) {
   .toc {
     display: none;
-  }
-}
-
-/* without a margin, a section's piece sits above its heading and the mid-section ones are left out */
-@media (max-width: 1180px) {
-  .piece-anchor {
-    height: auto;
-  }
-
-  .piece-anchor.mid {
-    display: none;
-  }
-
-  .piece,
-  .piece-anchor.mid .piece {
-    position: relative;
-    top: 0;
-    left: 0;
-    width: 170px;
-    margin: 2.5rem auto -2rem;
   }
 }
 
