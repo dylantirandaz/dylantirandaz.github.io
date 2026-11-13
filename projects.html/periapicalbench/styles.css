@@ -62,8 +62,9 @@ code {
 }
 
 /* ── backdrop: a faint drawing fixed behind the page, moving slowly the whole time ──
-   A rolled, half-wiped repeat of one tooth; a sprayed line that keeps redrawing itself; an arch of teeth as on the
-   film, with the dentist's box and a guess that wanders towards it; a face in broken planes; small things adrift. */
+   A rolled, half-wiped repeat of one tooth; a sprayed line with drips that keeps redrawing itself; a tooth printed
+   as a coarse screen of dots; a hand-drawn tooth chart; an arch of teeth as on the film, with the dentist's box
+   and a guess that wanders towards it. */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -110,8 +111,9 @@ code {
   animation: spray 90s linear infinite;
 }
 
-.figures > .spray {
+.sprays {
   stroke: #9fb4c6;
+  animation: fade 120s linear infinite;
 }
 
 .jawline,
@@ -119,55 +121,55 @@ code {
   opacity: 0.24;
 }
 
-.face {
-  opacity: 0.27;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: sway 24s ease-in-out infinite alternate;
-}
-
-.strand {
-  opacity: 0.8;
-  transform-box: fill-box;
-  transform-origin: top center;
-  animation: strand 9s ease-in-out infinite alternate;
-}
-
-.blush {
-  fill: #f7b9ab;
-  stroke: none;
-  opacity: 0.55;
-  filter: blur(9px);
-}
-
-.iris {
-  fill: var(--blue);
-  stroke: none;
-}
-
-.dark {
+.halftone {
   fill: #2a3948;
-  stroke: none;
+  opacity: 0.24;
 }
 
-.light {
-  fill: #ffffff;
-  stroke: none;
+.halftone .dark {
+  fill: var(--blue-deep);
 }
 
-.pupil {
-  animation: look 11s ease-in-out infinite;
+.scan {
+  animation: scan 6.5s ease-in-out infinite;
+}
+
+.wipe {
+  stroke: #ffffff;
+  opacity: 0.75;
+  filter: blur(7px);
+  animation: wipe var(--t, 30s) ease-in-out infinite alternate;
+}
+
+.drip {
+  stroke: #9fb4c6;
+  opacity: 0.45;
+  transform-box: fill-box;
+  transform-origin: top;
+  animation: drip var(--t, 20s) ease-in infinite;
+}
+
+.toothchart {
+  opacity: 0.26;
+}
+
+.struck path {
+  stroke-width: 1.8;
+  stroke-dasharray: 1 1;
+  animation: strike 22s ease-in-out infinite;
+  animation-delay: inherit;
 }
 
 .gold {
   stroke: var(--blue-deep);
-  stroke-width: 2.4;
-  opacity: 0.9;
+  stroke-width: 2;
+  opacity: 0.5;
 }
 
 .guess {
   stroke: #2a3948;
-  stroke-width: 1.6;
+  stroke-width: 1.3;
+  stroke-opacity: 0.5;
   stroke-dasharray: 5 4;
   transform-box: fill-box;
   animation: guess 17s ease-in-out infinite;
@@ -176,15 +178,6 @@ code {
 .float {
   transform-box: fill-box;
   animation: float var(--t, 30s) ease-in-out infinite alternate;
-}
-
-.star {
-  fill: var(--blue);
-  stroke: none;
-  opacity: 0.5;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: twinkle var(--t, 7s) ease-in-out infinite alternate;
 }
 
 @keyframes boil {
@@ -197,32 +190,40 @@ code {
 }
 
 @keyframes spray {
-  0% { stroke-dashoffset: 1; opacity: 0; }
-  3% { opacity: 1; }
-  78% { stroke-dashoffset: 0; opacity: 1; }
-  92% { stroke-dashoffset: 0; opacity: 1; }
-  100% { stroke-dashoffset: 0; opacity: 0; }
+  0% { stroke-dashoffset: 1; }
+  80%, 100% { stroke-dashoffset: 0; }
+}
+
+@keyframes fade {
+  0%, 92% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes wash {
   to { transform: translate(2.5%, -2%) scale(1.06); }
 }
 
-@keyframes sway {
-  from { transform: translateY(0) rotate(-1.6deg); }
-  to { transform: translateY(-16px) rotate(1.6deg); }
+@keyframes scan {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
-@keyframes strand {
-  from { transform: rotate(-2.2deg); }
-  to { transform: rotate(2.2deg); }
+@keyframes wipe {
+  from { transform: translate(-40px, 10px); }
+  to { transform: translate(70px, -24px); }
 }
 
-@keyframes look {
-  0%, 22% { transform: translate(0, 0); }
-  30%, 48% { transform: translate(var(--look), calc(var(--look) * -0.4)); }
-  56%, 74% { transform: translate(calc(var(--look) * -1), calc(var(--look) * 0.5)); }
-  82%, 100% { transform: translate(0, 0); }
+@keyframes drip {
+  0% { transform: scaleY(0); opacity: 0; }
+  8% { opacity: 0.45; }
+  70%, 90% { transform: scaleY(1); opacity: 0.45; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+@keyframes strike {
+  0%, 12% { stroke-dashoffset: 1; }
+  22%, 82% { stroke-dashoffset: 0; }
+  94%, 100% { stroke-dashoffset: 1; }
 }
 
 /* the guess starts well off the lesion, hunts, and settles with partial overlap */
@@ -240,11 +241,6 @@ code {
   to { transform: translateY(-22px) rotate(6deg); }
 }
 
-@keyframes twinkle {
-  from { transform: scale(0.6) translateY(6px); opacity: 0.15; }
-  to { transform: scale(1.1) translateY(-8px); opacity: 0.6; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .backdrop *,
   .backdrop .wash {
@@ -255,7 +251,8 @@ code {
     display: none;
   }
 
-  .spray {
+  .spray,
+  .struck path {
     stroke-dasharray: none;
   }
 }
