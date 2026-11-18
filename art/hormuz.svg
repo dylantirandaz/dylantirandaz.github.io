@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <!-- wash: a wide wet edge, thin pigment, and a darker rim where the paint dries.
+       fine: the same with a small edge, for the drawn parts. mottle: uneven ground. -->
+  <defs>
+    <filter id="wash" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" seed="35" result="flow"/>
+      <feDisplacementMap in="SourceGraphic" in2="flow" scale="44" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+      <feGaussianBlur in="shape" stdDeviation="3" result="soft"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="4" seed="75" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.3" result="pigment"/>
+      <feComposite in="soft" in2="pigment" operator="in" result="grained"/>
+      <feMorphology in="soft" operator="erode" radius="4" result="inner"/>
+      <feGaussianBlur in="inner" stdDeviation="4" result="innerSoft"/>
+      <feComposite in="soft" in2="innerSoft" operator="out" result="rim"/>
+      <feMerge><feMergeNode in="grained"/><feMergeNode in="rim"/></feMerge>
+    </filter>
+    <filter id="fine" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="4" seed="42" result="flow"/>
+      <feDisplacementMap in="SourceGraphic" in2="flow" scale="11" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+      <feGaussianBlur in="shape" stdDeviation="1.1" result="soft"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="4" seed="82" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.3" result="pigment"/>
+      <feComposite in="soft" in2="pigment" operator="in" result="grained"/>
+      <feMorphology in="soft" operator="erode" radius="2" result="inner"/>
+      <feGaussianBlur in="inner" stdDeviation="2" result="innerSoft"/>
+      <feComposite in="soft" in2="innerSoft" operator="out" result="rim"/>
+      <feMerge><feMergeNode in="grained"/><feMergeNode in="rim"/></feMerge>
+    </filter>
+    <filter id="mottle" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.009" numOctaves="4" seed="38"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.1  0 0 0 0 0.07  0 0 0 0 0.06  0 0 0 0.7 -0.2"/>
+    </filter>
+  </defs>
+  <rect width="800" height="500" fill="#1c1517"/>
+  <rect width="800" height="500" filter="url(#mottle)"/>
+  <rect x="52" y="40" width="696" height="420" rx="30" fill="#2b3f73" fill-opacity="0.6" filter="url(#wash)"/>
+  <path d="M40 30 H760 V150 Q640 215 560 180 Q470 140 400 190 Q330 235 240 170 Q150 120 40 150 Z" fill="#7a2a30" fill-opacity="0.96" filter="url(#wash)"/>
+  <path d="M40 470 V400 Q160 380 260 420 Q330 430 360 370 Q372 300 400 262 Q426 300 430 370 Q470 430 560 410 Q680 380 760 420 V470 Z" fill="#d86a2c" fill-opacity="0.92" filter="url(#wash)"/>
+  <g filter="url(#fine)">
+    <ellipse cx="478" cy="226" rx="22" ry="8" fill="#7a2a30"/>
+    <path d="M80 292 Q250 332 330 252 Q400 206 480 264 Q600 342 730 302" fill="none" stroke="#eadfc9" stroke-opacity="0.55" stroke-width="3" stroke-dasharray="10 12"/>
+    <g fill="none" stroke="#e6b93e" stroke-width="3"><circle cx="400" cy="226" r="22" stroke-opacity="0.6"/><circle cx="400" cy="226" r="42" stroke-opacity="0.3"/></g>
+    <g fill="#e6b93e"><circle cx="150" cy="304" r="6"/><circle cx="310" cy="270" r="6"/><circle cx="400" cy="226" r="7"/><circle cx="530" cy="296" r="6"/><circle cx="655" cy="322" r="6"/></g>
+  </g>
+</svg>
