@@ -1,424 +1,354 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
-
-:root {
-  --bg: #faf9f5;
-  --bg-secondary: #f3f1e8;
-  --text: #2c251d;
-  --text-heading: #070504;
-  --text-soft: #736b63;
-  --text-faint: #968d85;
-  --accent: #901714;
-  --accent-hover: #6e110f;
-  --border: #968d85;
-  --font-body: 'Crimson Text', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --max-width: 650px;
+/* Junicode: a typeface made for medievalists, from the Fell types of the Oxford
+   University Press. The files hold only the Latin letters that the page uses. */
+@font-face {
+  font-family: 'Junicode';
+  src: url('/fonts/Junicode-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Junicode';
+  src: url('/fonts/Junicode-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
 }
 
+/* Palette: warm plaster, with fresco pigments for the colour fields. */
+:root {
+  --plaster: #f4eee2;
+  --card: #faf6ed;
+  --ink: #2a2220;
+  --ink-soft: #6f645c;
+  --ink-faint: #887c72;
+  --rule: #dcd2c0;
+  --gold: #b0832c;
+  --wash-strength: 0.75;
+  --field-dim: 1;
+  --font: 'Junicode', 'Iowan Old Style', Georgia, serif;
+  --page-width: 68rem;
+}
+
+/* Dark theme: maroon and black. */
 [data-theme="dark"] {
-  --bg: #1a1816;
-  --bg-secondary: #242120;
-  --text: #e8e2d9;
-  --text-heading: #f0ebe4;
-  --text-soft: #a8a196;
-  --text-faint: #706b64;
-  --accent: #d4785e;
-  --accent-hover: #e89a7e;
-  --border: #3a3533;
+  --plaster: #171012;
+  --card: #1e1517;
+  --ink: #ebe0cf;
+  --ink-soft: #ab9d8e;
+  --ink-faint: #8c7e73;
+  --rule: #35272a;
+  --gold: #c9a04a;
+  --wash-strength: 0.3;
+  --field-dim: 0.86;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
+
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-body);
-  color: var(--text);
-  background: var(--bg);
-  line-height: 1.75;
-  font-size: 19px;
-  transition: background .3s ease, color .3s ease;
-  overflow-x: hidden;
   position: relative;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  font-variant-numeric: oldstyle-nums;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--plaster);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ── Background images ── */
-#bg {
-  position: fixed;
-  inset: 0;
-  background-position: center;
-  background-size: cover;
-  opacity: 0.02;
-  transition: opacity 0.6s ease;
-  pointer-events: none;
+/* Watercolour that flows behind the page; water.js paints it. The canvas is as
+   large as the page, so the washes scroll with the text. */
+.washes {
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: -1;
-}
-body.reveal #bg { opacity: 0.04; }
-
-body.page-index #bg {
-  background: url('FangedNumena.jpg') center/cover;
-  opacity: 0.04;
-}
-body.page-bookshelf #bg {
-  background: url('dante.jpg') center/cover;
-  opacity: 0.05;
-}
-body.page-projects #bg {
-  background: url('napoleoncrossingthealps.jpg') center/cover;
-  opacity: 0.05;
-}
-body.page-contact #bg {
-  background: url('the-sublime.jpg') center/cover;
-  opacity: 0.06;
-}
-
-/* ── Masthead / Top Nav ── */
-.masthead {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 0;
   width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: var(--wash-strength);
 }
 
-.masthead-inner {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
+/* Plaster grain. The same grain lies over each colour field. */
+body::before,
+.field::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body::before {
+  position: fixed;
+  z-index: -1;
+  opacity: 0.16;
 }
 
-.masthead .site-title {
-  font-family: var(--font-body);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
-  color: var(--text);
-  text-decoration: none;
-}
-.masthead .site-title:hover {
-  color: var(--text-soft);
-  text-decoration: none;
-}
-
-nav[aria-label="primary"] {
-  display: flex;
-  gap: 1.75rem;
-}
-
-nav[aria-label="primary"] a {
-  font-family: var(--font-sans);
-  font-size: 0.8em;
-  font-weight: 400;
-  letter-spacing: 0.03em;
-  text-transform: lowercase;
-  color: var(--text-soft);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-nav[aria-label="primary"] a:hover {
-  color: var(--text);
-}
-nav[aria-label="primary"] a.active {
-  color: var(--text);
-  font-style: italic;
-}
-
-/* ── Main Content ── */
-main {
-  max-width: var(--max-width);
-  padding: 3rem 1.5rem;
+.page {
+  max-width: var(--page-width);
   margin: 0 auto;
-  width: 100%;
-  flex: 1;
+  padding: 6rem 2rem;
 }
 
-/* ── Typography ── */
-h1 {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1.3;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-align: center;
-  color: var(--text-heading);
-  margin-bottom: 0.25rem;
-}
-
-h2 {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 1.2rem;
-  line-height: 1.3;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-  color: var(--text-heading);
-  margin-bottom: 0.75rem;
-}
-
-h3 {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 1.15rem;
-  line-height: 1.4;
-  color: var(--text-heading);
-  margin-bottom: 0.4rem;
-}
-
-/* Crimson Text's bold "ff" ligature is too wide and splits words ("diff usion"). */
-h1, h2, h3, strong {
-  font-variant-ligatures: no-common-ligatures;
-}
-
-p, li {
-  color: var(--text);
-  font-size: 19px;
-  line-height: 1.75;
-}
-
-p { margin-bottom: 1.25rem; }
-
-/* ── CRITICAL: Links blend in, not stand out ── */
 a {
-  color: var(--text);
+  color: inherit;
   text-decoration: underline;
+  text-decoration-color: var(--rule);
   text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-  transition: color 0.2s ease;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 a:hover {
-  color: var(--text-soft);
-  text-decoration: underline;
+  color: var(--ink);
+  text-decoration-color: var(--gold);
 }
 
-/* Accent links: nav, buttons, specific callouts */
-a.accent-link,
-.btn,
-nav[aria-label="primary"] a {
-  color: var(--accent);
+/* ── Introduction ── */
+h1, h2, h3 { font-weight: 400; }
+
+h1 {
+  font-size: 2.4rem;
+  line-height: 1.1;
+}
+
+.intro p {
+  max-width: 34rem;
+  margin-top: 0.85rem;
+  color: var(--ink-soft);
+}
+
+/* The name, with the contact links on the same line to its right. */
+.name-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.5rem;
+}
+.links {
+  display: flex;
+  gap: 1.25rem;
+}
+.links a {
+  font-style: italic;
+  color: var(--ink-faint);
   text-decoration: none;
 }
-a.accent-link:hover,
-.btn:hover {
-  color: var(--accent-hover);
-}
-
-/* ── Drop Cap ── */
-.drop-cap::first-letter {
-  float: left;
-  font-family: var(--font-body);
-  font-size: 3.5rem;
-  font-weight: 700;
-  line-height: 0.8;
-  padding-right: 0.1em;
-  padding-top: 0.05em;
-  color: var(--text-heading);
-}
+.links a:hover { color: var(--gold); }
 
 /* ── Sections ── */
 section {
-  margin-bottom: 2.5rem;
+  margin-top: 6rem;
+  scroll-margin-top: 2rem;
 }
 
-section ul {
-  list-style: none;
-  padding-left: 0;
-  margin-left: 0;
+/* The name of a section, in small capitals. */
+.label {
+  font-size: 1.3rem;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.05em;
+  color: var(--ink);
 }
 
-/* ── Ornamental divider ── */
-.divider {
-  text-align: center;
-  margin: 2.5rem 0;
-  color: var(--text-faint);
-  font-size: 1.25rem;
-  letter-spacing: 0.5em;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
 }
 
-/* ── Experience list (about) ── */
-.experience-list {
-  margin-bottom: 1.5rem;
+.work { margin-top: 1.25rem; }
+
+.projects {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
-.experience-list li {
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.experience-list li:last-child {
-  border-bottom: none;
-}
-
-/* ── Project cards ── */
-.project-card {
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.project-card:last-child {
-  border-bottom: none;
-}
-.project-card h3 {
-  color: var(--text-heading);
-}
-.project-card p {
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
-  color: var(--text);
-}
-.btn {
-  display: inline-block;
-  margin-top: 0.25rem;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  letter-spacing: 0.02em;
-  color: var(--accent);
+/* ── Cards ── */
+.card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  color: inherit;
   text-decoration: none;
+  transition: border-color 0.3s ease;
 }
-.btn:hover {
-  color: var(--accent-hover);
+a.card:hover { border-color: var(--gold); }
+
+/* A place of work has no frame: the niche sits on the plaster. */
+.card--place {
+  background: none;
+  border: 0;
+  text-align: center;
+}
+a.card--place:hover h3 {
   text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
-.tag {
-  display: inline-block;
-  margin-left: 0.35rem;
-  padding: 0 0.5rem;
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  color: var(--accent);
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  letter-spacing: 0.02em;
-  line-height: 1.6;
-  vertical-align: 0.1em;
-  white-space: nowrap;
+
+.card h3 {
+  font-size: 1.2rem;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.card p {
+  margin-top: 0.3rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.card--place .card-meta {
+  justify-content: center;
+  margin: 0.9rem 0 0.1rem;
+}
+.card--place p { color: var(--ink-faint); }
+
+.card-text { padding: 0.8rem 1rem 1.1rem; }
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.9375rem;
+  font-style: italic;
+  color: var(--ink-faint);
+}
+
+/* ── Colour fields ──
+   A ground colour with soft-edged bands in a column.
+   Each band sets its colour (--c) and its share of the height (--h). */
+.field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  padding: 6% 7%;
+  background: var(--ground);
+  border-radius: 2px 2px 0 0;
+  filter: brightness(var(--field-dim));
+}
+.field i {
+  flex: var(--h) 1 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.07), transparent 35%, rgba(0, 0, 0, 0.08)),
+    var(--c);
+  border-radius: 5px;
+  filter: blur(5px);
+  transition: filter 0.6s ease, transform 0.6s ease;
+}
+.field i + i { margin-top: 4.5%; }
+.field::after {
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+.card:hover .field i {
+  filter: blur(7px) saturate(1.2) brightness(1.07);
+  transform: scale(1.015);
+}
+
+/* The arched niche of a cell fresco. */
+.field--niche {
+  aspect-ratio: 1;
+  padding: 13% 11% 10%;
+  border-radius: 50% 50% 2px 2px / 30% 30% 2px 2px;
+}
+.field--niche i:first-child {
+  border-radius: 50% 50% 5px 5px / 34% 34% 5px 5px;
 }
 
 /* ── Bookshelf ── */
-.bookshelf-intro {
+.shelf-intro {
+  max-width: 34rem;
+  margin-top: 0.5rem;
   font-style: italic;
-  margin-bottom: 2rem;
+  color: var(--ink-soft);
 }
-
-section h2 {
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1rem;
+.shelf {
+  gap: 2.5rem 1.5rem;
+  margin-top: 1.75rem;
 }
-
-section ul li {
-  padding: 0.35rem 0;
-  font-size: 1rem;
+.shelf h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.25rem;
 }
-
-/* ── Page subtitle ── */
-.page-subtitle {
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  color: var(--text-faint);
-  letter-spacing: 0.05em;
-  margin-bottom: 2.5rem;
-  text-transform: lowercase;
-  text-align: center;
+/* A small two-band field marks each shelf. */
+.shelf h3::before {
+  content: '';
+  width: 0.8rem;
+  height: 1rem;
+  border-radius: 1px;
+  background: linear-gradient(var(--a) 0 52%, var(--b) 52%);
+}
+.shelf ul {
+  list-style: none;
+  margin-top: 0.75rem;
+}
+.shelf li {
+  padding: 0.3rem 0;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  color: var(--ink-faint);
+}
+.shelf cite {
+  display: block;
+  font-style: normal;
+  color: var(--ink);
 }
 
 /* ── Footer ── */
-.site-footer {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
-  width: 100%;
-  border-top: 1px solid var(--border);
-  text-align: center;
+footer {
+  margin-top: 6rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.875rem;
+  color: var(--ink-faint);
 }
 
-.site-footer .footer-ornament {
-  display: block;
-  color: var(--text-faint);
-  font-size: 1rem;
-  letter-spacing: 0.4em;
-  margin-bottom: 1rem;
-}
-
-.site-footer p {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  color: var(--text-faint);
-  margin-bottom: 0.25rem;
-  letter-spacing: 0.02em;
-}
-
-.site-footer a {
-  color: var(--text-faint);
-  text-decoration: none;
-}
-.site-footer a:hover {
-  color: var(--text-soft);
-  text-decoration: underline;
-}
-
-/* ── Theme toggle ── */
+/* ── Theme toggle: a disc of the opposite ground ── */
 .theme-toggle {
   position: fixed;
-  bottom: 1.5rem;
   right: 1.5rem;
-  width: 36px;
-  height: 36px;
+  bottom: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--gold);
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  color: var(--text-faint);
-  font-size: 0.9rem;
+  background: var(--ink);
   cursor: pointer;
-  z-index: 99;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease;
 }
-.theme-toggle:hover {
-  transform: scale(1.05);
-  border-color: var(--text-soft);
+.theme-toggle:hover { transform: scale(1.1); }
+
+@media (min-width: 40rem) {
+  .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* ── Contact ── */
-#contact p {
-  margin-bottom: 0.75rem;
+@media (min-width: 48rem) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .projects { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-/* ── Responsive ── */
-@media (max-width: 600px) {
-  body {
-    font-size: 16px;
-  }
-  .masthead {
-    padding: 1.5rem 1rem 0;
-  }
-  .masthead-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-  nav[aria-label="primary"] {
-    gap: 1.25rem;
-  }
-  main {
-    padding: 2rem 1rem;
-  }
-  h1 {
-    font-size: 1.25rem;
-  }
-  p, li {
-    font-size: 16px;
-  }
-  .site-footer {
-    padding: 1.5rem 1rem 2rem;
-  }
-  /* The text column fills a phone screen, so a floating button would cover it; sit beside the site title. */
+@media (max-width: 47.99rem) {
+  .page { padding: 4rem 1rem; }
+  h1 { font-size: 2rem; }
+  /* The disc would cover the text column on a narrow screen; put it beside the name. */
   .theme-toggle {
     position: absolute;
-    top: 1.5rem;
+    top: 4.4rem;
     right: 1rem;
+    bottom: auto;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; }
 }

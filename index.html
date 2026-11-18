@@ -4,49 +4,233 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>dylan tirandaz</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="toggle.js"></script>
-  <link rel="preload" as="image" href="FangedNumena.jpg">
+  <meta name="description" content="I study computer science and physics at the university of texas at dallas. Currently doing the rl residency at Prime Intellect.">
+  <link rel="canonical" href="https://dylantirandaz.com/">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/toggle.js"></script>
 </head>
 
-<body class="page-index">
-  <header class="masthead">
-    <div class="masthead-inner">
-      <a href="index.html" class="site-title">dylan tirandaz</a>
-      <nav aria-label="primary">
-        <a href="index.html" class="active">about</a>
-        <a href="projects.html">projects</a>
-        <a href="bookshelf.html">bookshelf</a>
-        <a href="contact.html">contact</a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <section id="about">
-      <p class="drop-cap">
-        I study computer science and physics at the university of texas at dallas (graduating dec 2026). Currently doing the rl residency at Prime Intellect </a>. Previously I interned at JPMorgan Chase, Fidelity Investments, and Formic. Mainly working on AI Infrastructure and some robotics
-      </p>
-      
-      </ul>
-
-      <div class="divider">* * *</div>
-
+<body>
+  <canvas class="washes" aria-hidden="true"></canvas>
+  <script src="/water.js"></script>
+  <main class="page">
+    <header class="intro">
+      <div class="name-line">
+        <h1>dylan tirandaz</h1>
+        <nav class="links" id="contact" aria-label="contact">
+          <a href="mailto:dtirandaz@gmail.com">email</a>
+          <a href="https://github.com/dylantirandaz">github</a>
+        </nav>
+      </div>
       <p>
-        I'm interested in diffusion, alignment, mechinterp, reinforcement learning, biocomputing, and brain-computer interfaces . <a href="contact.html">Ask me</a> about the envs and evals I build.
+        I study computer science and physics at the university of texas at dallas (graduating dec 2026). Currently doing the rl residency at <a href="https://www.primeintellect.ai/">Prime Intellect</a>. Mainly working on AI Infrastructure and some robotics.
       </p>
       <p>
-        Aside from all of that, I love to <a href="bookshelf.html">read</a> and work on fun <a href="projects.html">projects</a>.
+        I'm interested in diffusion, alignment, mechinterp, reinforcement learning, biocomputing, and brain-computer interfaces. <a href="mailto:dtirandaz@gmail.com">Ask me</a> about the envs and evals I build.
       </p>
+      <p>
+        Aside from all of that, I love to <a href="#bookshelf">read</a> and work on fun <a href="#projects">projects</a>.
+      </p>
+    </header>
+
+    <section id="work">
+      <h2 class="label">Work</h2>
+      <div class="grid work">
+        <a class="card card--place" href="https://www.primeintellect.ai/">
+          <div class="field field--niche" style="--ground:#d7a199"><i style="--c:#3f5e93;--h:5"></i><i style="--c:#c89b3c;--h:2"></i></div>
+          <div class="card-meta">now</div>
+          <h3>Prime Intellect</h3>
+          <p>RL residency. I build envs and evals.</p>
+        </a>
+        <div class="card card--place">
+          <div class="field field--niche" style="--ground:#3d1217"><i style="--c:#6b2028;--h:4"></i><i style="--c:#1c1517;--h:4"></i></div>
+          <div class="card-meta">previously</div>
+          <h3>JPMorgan Chase</h3>
+          <p>Intern.</p>
+        </div>
+        <div class="card card--place">
+          <div class="field field--niche" style="--ground:#7b8c6a"><i style="--c:#eadfc9;--h:3"></i><i style="--c:#4f5d45;--h:4"></i></div>
+          <div class="card-meta">previously</div>
+          <h3>Fidelity Investments</h3>
+          <p>Intern.</p>
+        </div>
+        <div class="card card--place">
+          <div class="field field--niche" style="--ground:#c89b3c"><i style="--c:#b8452e;--h:4"></i><i style="--c:#e6b93e;--h:3"></i></div>
+          <div class="card-meta">previously</div>
+          <h3>Formic</h3>
+          <p>Intern.</p>
+        </div>
+      </div>
     </section>
+
+    <section id="projects">
+      <h2 class="label">Projects</h2>
+      <div class="grid projects">
+        <a class="card" href="/projects.html/periapicalbench/">
+          <div class="field" style="--ground:#1c1517"><i style="--c:#33282b;--h:5"></i><i style="--c:#8d8478;--h:4"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>blog post</span><span>prime intellect</span></div>
+            <h3>periapical lesions bench</h3>
+            <p>A dental X-ray benchmark where an agent has to find and grade every periapical lesion on a panoramic film.</p>
+          </div>
+        </a>
+        <a class="card" href="/projects.html/mitosisbench/">
+          <div class="field" style="--ground:#4b2b3e"><i style="--c:#d7a199;--h:4"></i><i style="--c:#c07f7c;--h:2"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>blog post</span><span>prime intellect</span></div>
+            <h3>mitosis bench</h3>
+            <p>A pathology benchmark where an agent has to find every mitotic figure in a tumor image.</p>
+          </div>
+        </a>
+        <a class="card" href="/earth/">
+          <div class="field" style="--ground:#2b3f73"><i style="--c:#8fa9c9;--h:3"></i><i style="--c:#7b8c6a;--h:4"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>live</span></div>
+            <h3>emergent topography</h3>
+            <p>Interactive 3D globes of what language models think Earth looks like, built from per-coordinate binary probes (land/water and four elevation thresholds), each in a fresh context.</p>
+          </div>
+        </a>
+        <a class="card" href="/radread-leaderboard/">
+          <div class="field" style="--ground:#3a2a24"><i style="--c:#eadfc9;--h:3"></i><i style="--c:#1c1517;--h:5"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>leaderboard</span></div>
+            <h3>radread</h3>
+            <p>A benchmark that tests if frontier models can read radiographs: find each abnormality, box it, name the diagnosis, and pick the next step.</p>
+          </div>
+        </a>
+        <a class="card" href="/projects.html/mlx-mach-beamforming/">
+          <div class="field" style="--ground:#b8452e"><i style="--c:#e6b93e;--h:2"></i><i style="--c:#d86a2c;--h:5"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>blog post</span></div>
+            <h3>mlx beamforming for microbubbles</h3>
+            <p>A native Apple Silicon beamforming backend for microbubble ULM, validated against the MACH/CUDA reference on synthetic inputs and one real ultratrace acquisition.</p>
+          </div>
+        </a>
+        <a class="card" href="/projects.html/infinite-diffusion/">
+          <div class="field" style="--ground:#d9b46a"><i style="--c:#3f5e93;--h:4"></i><i style="--c:#d7a199;--h:3"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>blog post</span></div>
+            <h3>infinite diffusion</h3>
+            <p>A RoBERTa-large masked denoiser posttrained on Infinite Jest and sampled as a diffusion language model, with denoising traces and sampler ablations.</p>
+          </div>
+        </a>
+        <a class="card" href="/projects.html/homerslm/">
+          <div class="field" style="--ground:#3f5e93"><i style="--c:#5c1b22;--h:5"></i><i style="--c:#c89b3c;--h:2"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>blog post</span></div>
+            <h3>homer slm</h3>
+            <p>A from-scratch byte-level language model trained only on the Odyssey + my blog post abt it.</p>
+          </div>
+        </a>
+        <a class="card" href="/bdh.html">
+          <div class="field" style="--ground:#4f5d45"><i style="--c:#b8452e;--h:4"></i><i style="--c:#c89b3c;--h:3"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>live</span></div>
+            <h3>the dragon hatchling</h3>
+            <p>A from-scratch implementation of BDH, a brain-inspired language model with sparse, interpretable neurons. Includes an interactive explorer to generate text and watch neurons fire, plus a benchmark where BDH learns reasoning tasks faster than a same-size Transformer.</p>
+          </div>
+        </a>
+        <a class="card" href="https://pypi.org/project/tokencalc/">
+          <div class="field" style="--ground:#eadfc9"><i style="--c:#c89b3c;--h:3"></i><i style="--c:#d7a199;--h:4"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>pypi</span></div>
+            <h3>tokencalc</h3>
+            <p>Open-source Python package for tracking and calculating Claude API token costs. Parses Claude Code session logs to break down spending by model, cache usage, and API calls. Supports interactive mode, model comparison, budget planning, and CSV export.</p>
+          </div>
+        </a>
+        <a class="card" href="https://hormuz-intel.vercel.app/">
+          <div class="field" style="--ground:#5c1b22"><i style="--c:#1c1517;--h:4"></i><i style="--c:#d86a2c;--h:2"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>live</span></div>
+            <h3>hormuz intel</h3>
+            <p>Real-time OSINT intelligence dashboard for the Strait of Hormuz. Tracks AIS vessel traffic, military air activity, oil benchmarks, sea state, and EIA supply data with a live situation map and terminal interface.</p>
+          </div>
+        </a>
+        <a class="card" href="https://github.com/dylantirandaz/WineQualityPrediction">
+          <div class="field" style="--ground:#3d1217"><i style="--c:#6b2028;--h:5"></i><i style="--c:#c07f7c;--h:2"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>github</span></div>
+            <h3>wine quality prediction</h3>
+            <p>Predicts wine quality based on chemical properties using machine learning algorithms such as random forests and decision trees. Automates the wine grading process.</p>
+          </div>
+        </a>
+        <a class="card" href="https://www.youtube.com/watch?v=v2HF8tnCPbo">
+          <div class="field" style="--ground:#d86a2c"><i style="--c:#e6b93e;--h:5"></i><i style="--c:#eadfc9;--h:2"></i></div>
+          <div class="card-text">
+            <div class="card-meta"><span>under construction</span></div>
+            <h3>advanced monitoring for silicon solar cells</h3>
+            <p>Using IoT sensors and AI to monitor and optimize silicon solar cells in real time. Data on voltage, current, temperature, and irradiance dynamically adjusts panel settings to maximize efficiency.</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section id="bookshelf">
+      <h2 class="label">Bookshelf</h2>
+      <p class="shelf-intro">
+        A list of books, essays, films, and albums that have left a lasting impact on me.
+        If you'd like to recommend something or talk about anything listed here, feel free to <a href="mailto:dtirandaz@gmail.com">reach out</a>.
+      </p>
+      <div class="grid shelf">
+        <div>
+          <h3 style="--a:#3f5e93;--b:#d7a199">Books</h3>
+          <ul>
+            <li><cite>The Pale King</cite> David Foster Wallace</li>
+            <li><cite>Gravity's Rainbow</cite> Thomas Pynchon</li>
+            <li><cite>By Night in Chile</cite> Roberto Bolano</li>
+            <li><cite>As I Lay Dying</cite> William Faulkner</li>
+            <li><cite>The Idiot</cite> Fydor Dostoevsky</li>
+            <li><cite>The Sound of Waves</cite> Yukio Mishima</li>
+            <li><cite>The Sun Also Rises</cite> Ernest Hemingway</li>
+            <li><cite>The Possibility of an Island</cite> Michel Houellebecq</li>
+            <li><cite>Submission</cite> Michel Houellebecq</li>
+            <li><cite>All Desire is a Desire for Being</cite> Rene Girard</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="--a:#5c1b22;--b:#d86a2c">Films</h3>
+          <ul>
+            <li><cite>Memories of Murder</cite> Bong Joon-ho</li>
+            <li><cite>The Seventh Seal</cite> Ingmar Bergman</li>
+            <li><cite>Funny Games</cite> Michael Haneke</li>
+            <li><cite>The Thing</cite> John Carpenter</li>
+            <li><cite>After Hours</cite> Martin Scorsese</li>
+            <li><cite>Lost in Translation</cite> Sofia Coppola</li>
+            <li><cite>Her</cite> Spike Jonze</li>
+            <li><cite>New Rose Hotel</cite> Abel Ferrara</li>
+            <li><cite>The Vanishing</cite> George Sluizer</li>
+            <li><cite>The Virgin Suicides</cite> Sofia Coppola</li>
+            <li><cite>Sexy Beast</cite> Jonathan Glazer</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="--a:#c89b3c;--b:#7b8c6a">Essays/Talks</h3>
+          <ul>
+            <li><cite>Against Edenism</cite> Peter Thiel</li>
+            <li><cite>The Origin of the Work of Art</cite> Heidegger</li>
+            <li><cite>Tradition and Individual Talent</cite> T.S. Eliot</li>
+            <li><cite>Consider the Lobster</cite> David Foster Wallace</li>
+            <li><cite>You and Your Research</cite> Richard Hamming</li>
+            <li><cite>Voyages to the End of the World</cite> Peter Thiel &amp; Sam Wolfe</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="--a:#e6b93e;--b:#b8452e">Albums</h3>
+          <ul>
+            <li><cite>Turn On The Bright Lights</cite> Interpol</li>
+            <li><cite>The New Abnormal</cite> The Strokes</li>
+            <li><cite>Heaven or Las Vegas</cite> Cocteau Twins</li>
+            <li><cite>Souvlaki</cite> Slowdive</li>
+            <li><cite>In the Aeroplane Over the Sea</cite> Neutral Milk Hotel</li>
+            <li><cite>My Beautiful Dark Twisted Fantasy</cite> Kanye West</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>dylan tirandaz &mdash; dallas, tx &middot; dedicated to building things that matter</p>
+    </footer>
   </main>
-
-  <footer class="site-footer">
-    <span class="footer-ornament">* * *</span>
-    <p>dylan tirandaz &mdash; dallas, tx</p>
-    <p>dedicated to building things that matter</p>
-  </footer>
-
-  <div id="bg"></div>
 </body>
 </html>
